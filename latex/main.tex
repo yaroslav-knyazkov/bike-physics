@@ -1,0 +1,156 @@
+\documentclass[10pt]{extarticle}
+
+% ---------- Packages ----------
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{amsmath, amsfonts, bm}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{nomencl}
+\usepackage{array}
+\usepackage{pdflscape}
+\usepackage[export]{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{titlesec}
+
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{arrows.meta, arrows}
+
+% ---------- Page setup ----------
+\geometry{
+    a4paper,
+    total={170mm,257mm},
+    left=20mm,
+    top=20mm
+}
+
+% ---------- Headers and footers ----------
+\pagestyle{fancy}
+\pagenumbering{arabic}
+
+\fancyhead[L]{Bike Physics by Yaroslav Knyazkov}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+
+% ---------- Hyperlinks ----------
+\hypersetup{
+    colorlinks=true,
+    linkcolor={blue!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+% ---------- Equation numbering ----------
+\numberwithin{equation}{subsection}
+
+% ---------- Custom commands ----------
+\newcommand{\todo}[1]{%
+    \textcolor{red}{(#1)}%
+}
+% \ai{...} marks short inline text written/edited by Claude (blue). Do not put blank lines
+% or sectioning commands inside it -- \textcolor's argument can't contain a \par.
+\newcommand{\ai}[1]{\textcolor{blue}{#1}}
+% For multi-paragraph blocks (incl. \subsection etc.), use the aiblock environment instead:
+% \begin{aiblock} ... \end{aiblock}
+\newenvironment{aiblock}{\color{blue}}{}
+% \vv{X} = the vector X, always rendered with a full-width arrow (\overrightarrow), for both
+% single-symbol quantities (\vv{F}, \vv{x}) and named offset vectors (\vv{AB}, \vv{A_1A_{2a}}).
+% Not called \v -- that's LaTeX's built-in caron accent (\v{c} produces c-with-caron).
+\newcommand{\vv}[1]{\overrightarrow{#1}}
+\newcommand{\sgn}{\operatorname{sgn}}
+
+% ---------- 4th heading level: System -> Subsystem instance -> content category ----------
+% \subsection   = System        (Frame + Rider / Wheel / Drivetrain)
+% \subsubsection = Subsystem instance (Rear (2a), Front (2b), Cassette (3a), Crankset (3b));
+%                  omitted for single-instance systems like Frame + Rider.
+% \subsubsubsection = content category (Assumptions / Force / Geometry / Moment)
+% Unnumbered by design: these labels repeat identically under every instance, a running
+% number would add noise without adding information.
+\titleformat{\paragraph}[block]{\normalfont\bfseries}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{1.5ex plus 1ex minus .2ex}{0.5ex plus .1ex}
+\newcommand{\subsubsubsection}[1]{\paragraph{#1}}
+
+\begin{document}
+
+\tableofcontents
+\newpage
+
+\section{Timeline}
+\input{timeline}
+
+\section{Description}
+\input{description}
+
+\newpage
+\section{Simplified}
+\label{sec:simplified}
+\begin{aiblock}
+Closed-form, analytically-tractable models -- simplified enough to solve by hand or in closed form. Support and sanity-check the numeric 2D/3D work rather than being superseded by it.
+\end{aiblock}
+
+\subsection{Forward motion}
+\label{sec:forward-motion}
+\input{simplified/forward_motion}
+
+\subsection{Turning motion}
+\ai{Decision: for now, turning stays Simplified-only -- no dedicated treatment in 2D/3D yet.}
+\subsubsubsection{Todo}
+\begin{itemize}
+    \item everything
+\end{itemize}
+
+\newpage
+\section{2D - Models}
+\label{sec:2dmodels}
+\subsection{Forces and moments}
+\label{sec:2dmodels-forces}
+\input{2d_models/forces}
+
+\subsection{Rigid body dynamics}
+\input{2d_models/rigidbody}
+
+\subsection{Models}
+\label{sec:2dmodels-models}
+\input{2d_models/models}
+
+\newpage
+\section{2D - Systems}
+\label{sec:2dsystems}
+\input{2d_systems/overview}
+
+\newpage
+\input{2d_systems/frame} \newpage
+\input{2d_systems/wheel} \newpage
+\subsection{Drivetrain}
+
+\newpage
+\section{2D - Assembly}
+\input{2d_assembly/frame_wheels}
+\input{2d_assembly/wheels_ground}
+
+\newpage
+\section{3D}
+\label{sec:3d}
+\begin{aiblock}
+Final stage, much later. Full spatial (6 DOF per body) rigid-body dynamics, extending the 2D derivation. Initially scoped to motion only -- the other three Timeline tracks (optimization/strategy, R\&D, data acquisition) are only revisited here once they're finished on top of 2D. Not started.
+\end{aiblock}
+
+\newpage
+\appendix
+\section{Notation conventions}
+\label{app:notation}
+\input{appendix/notation}
+
+\section{Atmosphere reference}
+\label{app:atmosphere}
+\input{appendix/atmosphere}
+
+\section{Candidate refinements}
+\label{app:refinements}
+\input{appendix/refinements}
+
+\end{document}

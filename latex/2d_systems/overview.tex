@@ -1,0 +1,27 @@
+\subsubsection{Systems}
+\begin{enumerate}
+    \item Frame + Rider
+    \item Wheel
+        \begin{enumerate}
+            \item Rear
+            \item Front
+        \end{enumerate}
+    \item Drivetrain
+        \begin{enumerate}
+            \item Casette
+            \item Crankset
+        \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Current global assumptions}
+\begin{itemize}
+    \item Planar (sagittal-plane) motion only: every rigid body has 3 DOF -- translation along $\hat x_i,\hat z_i$ and rotation about $\hat y$. No roll, yaw, or out-of-plane motion.
+    \item All bodies (frame+rider, wheels, drivetrain components) are rigid: no structural flex, no tire deformation. \emph{Pending: frame equivalent stiffness, rim/wheel stiffness, tire stiffness -- see Appendix~\ref{app:refinements}.}
+    \item Frame $i$ is the fixed, inertial (non-accelerating, non-rotating) world frame; $\hat z_i$ points opposite gravity, gravitational acceleration $g$ is constant. Frame $0$ is the ground-local frame, tied to the road at the current contact point (matches the ground-body subscript in $\vv{R}_{2a/0}$).
+    \item The road is a known, smooth ($C^1$, ideally $C^2$) graph $z(x)$ in the $x_i$-$z_i$ plane -- matches how real elevation data (GPS routes, surveys, DEMs) is normally given. Single-valued: no overhangs or vertical loops, which is fine for road terrain but will need generalizing to an arc-length curve for BMX/MTB features later. See Assembly for the frame-$0$ construction.
+    \item Aerodynamic loads ($\vv{A}$) are treated as known/prescribed quasi-steady inputs, not derived from a flow model.
+    \item Mass, CoG location, and inertia of each rigid body are known constants.
+\end{itemize}
+
+\subsubsection{Notation}
+Dimension, force/moment, and point labeling conventions used throughout this document are collected in Appendix~\ref{app:notation}.

@@ -1,0 +1,36 @@
+Every external or reaction force used in 2D -- Systems belongs to one of a small number of physical types, catalogued here. This is about what each type physically represents; symbol and subscript rules are in Appendix~\ref{app:notation-forces}.
+
+\subsubsection{Weight ($W$)}
+Acts at each body's own CoG, point $a$.
+\begin{equation}
+    \vv{W}_k = -m_k g\,\hat{z}_i
+\end{equation}
+$m_k$ -- mass of body $k$, $g$ -- gravitational acceleration (\S\ref{sec:gravity}), $\hat{z}_i$ -- direction, assumed vertical.
+
+\subsubsection{Aerodynamic ($A$)}
+Drag force and pitching moment from relative airflow, quasi-steady. Treated as a known, prescribed input.
+\begin{equation}
+    \vv{A}_{k,f} = -A_{k,x}\,\hat{x}_1 - A_{k,z}\,\hat{z}_1, \qquad \vv{A}_{k,m} = -A_{k,m}\,\hat{y}
+\end{equation}
+$\hat{x}_1,\hat{z}_1$ -- frame+rider's own axes, used for every body $k$'s aerodynamic force regardless of which body it acts on. $A_{k,x}$, $A_{k,z}$, $A_{k,m}$ -- signed scalars, defined in \S\ref{sec:aerodynamics-model}.
+
+\subsubsection{Reaction ($R$)}
+Contact and joint constraint forces -- axle bearings, ground contact. Not modeled from a force law: a free, unknown planar vector, solved from the equations of motion plus the kinematic constraints in Assembly.
+\begin{equation}
+    \vv{R}_{k/l} = R_{k/l,x}\,\hat{x} + R_{k/l,z}\,\hat{z}
+\end{equation}
+The axis is resolved per instance where needed -- e.g.\ ground contact resolves along the ground-local frame $\hat{x}_0,\hat{z}_0$, with the unilateral-contact/Coulomb-friction law in \S\ref{sec:wheels-ground} written as projections onto it.
+
+\subsubsection{Pedal force ($P$)}
+Pedaling magnitude, the rider's control input -- not derived from a physical law like the others, the quantity Optimization (Timeline) eventually solves for.
+\begin{equation}
+    \vv{P}_{3b/1,X} = {}^{x_{3b}}P_{3b/1,X}\,\hat{x}_{3b} + {}^{z_{3b}}P_{3b/1,X}\,\hat{z}_{3b}, \qquad X\in\{D,F\}
+\end{equation}
+${}^{x_{3b}}P_{3b/1,X}$, ${}^{z_{3b}}P_{3b/1,X}$ -- respectively the radial and axial contributions. Both components free, for each pedal point $D$, $F$ (\S\ref{sec:frame}).
+
+\subsubsection{Bearing friction ($Q$)}
+A resisting torque at each axle, opposing relative spin between the two bodies sharing it.
+\begin{equation}
+    \vv{Q}_{k/l} = -|Q_{k/l}|\,\sgn(\omega_{k/l})\,\hat{y}
+\end{equation}
+$\omega_{k/l}$ -- relative angular velocity of body $k$ w.r.t.\ body $l$ (\S\ref{app:notation-kinematics}).

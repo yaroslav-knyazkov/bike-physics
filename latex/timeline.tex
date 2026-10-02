@@ -1,0 +1,28 @@
+This is a roadmap for the project as a whole, not just this document. Four future application tracks are planned, on top of the physics core work already in progress here.
+
+\begin{enumerate}
+    \item \textbf{Physics simulation} (core, ongoing; currently the main focus). A numerical implementation of the multibody model derived in this document, itself built in three tiers -- see \S\ref{sec:simplified}--\S\ref{sec:3d} below for what each contains:
+    \begin{itemize}
+        \item \emph{Simplified}: closed-form, analytically-tractable models (forward motion, turning motion). Supports and sanity-checks the numeric stages below rather than being superseded by them.
+        \item \emph{2D}: the app's first real, coded-system-by-system stage -- current focus. Build order:
+        \begin{enumerate}
+            \item (in progress) simple frame, wheels, simplified (lumped) drivetrain
+            \item complex drivetrain -- each component (chain, cassette, crankset, pedals, \dots) as its own body
+            \item suspension -- front fork and rear, with multiple rear-suspension kinematic configurations
+            \item tire stiffness -- relax the rigid-wheel assumption
+            \item rider legs isolated -- full leg model with actuators, still attached to the frame
+            \item rider fully isolated -- whole rider as its own body, including postural/jump dynamics
+        \end{enumerate}
+        Other candidate refinements, not yet prioritized against the list above: see Appendix~\ref{app:refinements}.
+        \item \emph{3D}: final stage, much later. Initially motion only, extending the 2D multibody model to full spatial dynamics; other purposes may layer on afterward. Priority is to finish 2D forward-motion and all four application tracks on top of it first.
+    \end{itemize}
+    \item \textbf{Optimization and strategy} (primary goal). Two related but distinct problems built on top of the simulation core:
+    \begin{itemize}
+        \item \emph{Optimization}: given an objective (performance / time / velocity) and constraints, find the input (rider effort profile, line, gearing, \dots) that achieves it. Target order: road bike first (most predictable/constrained), then BMX, then MTB (least predictable -- terrain and technical variability dominate).
+        \item \emph{Strategy}: combine an energy model (rider/team energy expenditure and availability) with a strategy model (tactical choices -- drafting, attacks, team formations) to generate multiple possible race outcomes, the way F1 strategy simulation does -- surfacing which choices let a rider or team win, or maximize some other goal, rather than solving a single fixed objective directly. Planned starting point: define a rider power curve (or equivalent) as the energy-model primitive.
+    \end{itemize}
+    \item \textbf{Research and development}. A tool for bike manufacturers: given a desired behavior, or a trade-off to explore (e.g. weight vs.\ aero), use the model to steer component/geometry design. Two concrete deliverables planned: (a) a set of open questions the model should be able to answer analytically or numerically, and (b) a systematic map from bike geometry parameters to the behavior each one drives.
+    \item \textbf{Data acquisition}. Let ordinary riders, without lab equipment (wind tunnel, dynamometer, etc.), estimate their own real-world parameters -- drag ($C_dA$), rolling/bearing friction, drivetrain efficiency, braking coefficient -- from ordinary ride data. This is also how the simulation core in (1) gets calibrated against reality, so it feeds every other track rather than standing apart from them.
+\end{enumerate}
+
+Rough dependency: (1) underlies (2) and (3); (4) calibrates (1) and is largely independent otherwise, so it can be worked on in parallel.

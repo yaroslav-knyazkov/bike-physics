@@ -1,0 +1,10 @@
+\label{sec:rigidbody}
+Every body $k$ uses its CoG position $\vv{x}_k$ and (planar) rotation angle $\theta_k$ as state, with translational velocity/acceleration $\vv{v}_k,\vv{a}_k$ and angular velocity/acceleration $\omega_k,\alpha_k$ as their respective time derivatives. Since motion is planar, $I_k$ is always a scalar (moment of inertia about $\hat y$) -- no inertia tensor needed, regardless of whether a body's own mass distribution is axisymmetric:
+\begin{equation}
+    \sum\vv{F}_k = m_k\vv{a}_k, \qquad \sum\vv{M}_k(a_k) = I_k\alpha_k\,\hat y.
+\end{equation}
+Moments about a point $P\ne a_k$ pick up a transport term, from $\vv{M}_P=\vv{M}_{a_k}+\vv{r}_{a_k/P}\times\vv{F}_{total}$:
+\begin{equation}
+    \sum\vv{M}_k(P) = I_k\alpha_k\,\hat y + \vv{r}_{a_k/P}\times m_k\vv{a}_k.
+\end{equation}
+Each system's own Equations of motion just instantiates this.

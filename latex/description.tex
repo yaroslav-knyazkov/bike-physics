@@ -1,0 +1,13 @@
+This document holds the analytical derivations backing the app's code -- not a standalone reference, but the math worked out before it gets implemented. It has three parts, matching the Physics-simulation tiers in the Timeline above:
+\begin{itemize}
+    \item \textbf{Simplified}: closed-form models, simplified enough to stay analytically tractable (forward motion, turning motion). Not started yet.
+    \item \textbf{2D}: full planar (sagittal-plane) rigid-body multibody derivation, 3 DOF per body (see \texttt{Current global assumptions} below) -- current focus, and the only part with real content so far.
+    \item \textbf{3D}: full spatial rigid-body derivation, 6 DOF per body. Future work.
+\end{itemize}
+
+The 2D part is organized bottom-up:
+\begin{itemize}
+    \item \textbf{2D -- Systems}: free-body force/moment equations for each rigid body in isolation (Frame + Rider, Wheel -- Rear/Front, Drivetrain -- Cassette/Crankset), following a fixed template per subsystem instance: Assumptions, Force, Geometry, Moment.
+    \item \textbf{2D -- Assembly}: how the isolated systems connect -- joint reaction pairs and kinematic constraints (Frame -- Wheels), and the ground-contact model (Wheels -- Ground), including the curved-terrain and stick/slip/airborne cases needed for the full range of bike dynamics.
+\end{itemize}
+Conventions: subscripts follow the numbering in \texttt{Systems} (1 = Frame + Rider, 2a/2b = Rear/Front wheel, 3a/3b = Cassette/Crankset); \todo{...} marks open gaps in red; \texttt{aiblock} (or inline \texttt{\textbackslash ai\{...\}}) marks text written or edited by Claude in blue, so it stays distinguishable from your own writing.

@@ -1,0 +1,72 @@
+\subsection{Wheels -- Ground}
+\label{sec:wheels-ground}
+
+\subsubsection{Contact point}
+The road vector is given by
+\begin{equation}
+    \vv{Ob_{2a}}(x) = x\,\hat x_i + z(x)\hat z_i,
+\end{equation}
+where $O$ is the origin of frame $i$ and $b_{2a}$ is wheel 2a's candidate contact point on the road at horizontal position $x$ (matching the ground-contact point label $b$ already used in \S\ref{sec:wheel}) -- real elevation data (GPS routes, road surveys, digital elevation models) is almost always given this way already, as a graph $z(x)$ rather than a general parametrized curve.
+
+With local slope angle $\theta(x) = \arctan\!\big(z'(x)\big)$, at each point $x$ define the ground-local frame $0$, tilted from frame $i$ by $\theta(x)$,
+\begin{align}
+    \hat x_0(x) &= \cos\big(\theta(x)\big)\,\hat x_i + \sin\big(\theta(x)\big)\,\hat z_i, \\
+    \hat z_0(x) &= -\sin\big(\theta(x)\big)\,\hat x_i + \cos\big(\theta(x)\big)\,\hat z_i.
+\end{align}
+
+For wheel 2a (center $A$, radius $r_{2a}$), the geometric contact reference $x^*$ is the point on the road tangent to the wheel: chosen so the vector from the road to $A$ is normal to the road there,
+\begin{equation}
+    \vv{b_{2a}A}(x^*) \cdot \hat x_0(x^*) = 0.
+\end{equation}
+
+The actual contact resultant is not purely radial from $x^*$. Under load, tire deformation shifts the resultant slightly forward of $x^*$, in the direction of travel. Rather than add a separate resistance moment, that shift is folded directly into where the contact vector points:
+\begin{equation}
+    \vv{Ab_{2a}} = l_{2a,rr}\,\sigma\,\hat x_0 - r_{2a}\,\hat z_0, \qquad l_{2a,rr} = c_{2a,rr}\,r_{2a}, \qquad \sigma = \sgn\!\big(\vv{v}_{2a,A}\cdot\hat x_0\big),
+\end{equation}
+with $c_{2a,rr}$ the rolling resistance coefficient and $\sigma$ keeping the shift pointing in the current direction of travel (frame $0$ here is evaluated at $x^*$, per the previous equation).
+
+\subsubsection{Contact reaction}
+Define the gap
+\begin{equation}
+    g_N = \vv{b_{2a}A}\cdot\hat z_0(x^*) - r_{2a},
+\end{equation}
+which splits the reaction into two cases:
+
+\textbf{Not touching ($g_N>0$):}
+\begin{equation}
+    \vv{R}_{2a/0} = \vv{0},
+\end{equation}
+no force at all.
+
+\textbf{Touching ($g_N=0$):} $\vv{R}_{2a/0}$ is present, its components along the ground-local frame (\S\ref{sec:2dmodels-forces}) bounded by
+\begin{equation}
+    {}^{z_0}R_{2a/0} \ge 0, \qquad \big|{}^{x_0}R_{2a/0}\big| \le \mu_s\,{}^{z_0}R_{2a/0},
+\end{equation}
+the normal component non-negative (the ground can push, not pull) and the tangential component bounded by Coulomb static friction.
+
+Together, these two cases are the unilateral-contact complementarity condition
+\begin{equation}
+    {}^{z_0}R_{2a/0}\ge0, \qquad g_N\ge0, \qquad {}^{z_0}R_{2a/0}\,g_N=0.
+\end{equation}
+
+\subsubsection{Rolling constraint}
+While in contact, the material point $b_{2a}$ on the wheel has velocity
+\begin{equation}
+    \vv{v}_{2a,b_{2a}} = \vv{v}_{2a,A} + \vv{\omega}_{2a}\times\vv{Ab_{2a}},
+\end{equation}
+with tangential (slip) component $v_{slip} = \vv{v}_{2a,b_{2a}}\cdot\hat x_0$ (really ${}^{x_0}v_{2a,b_{2a}}$ under \S\ref{app:notation-kinematics}'s template, kept as $v_{slip}$ for readability) -- the normal component is zero automatically, enforced by the non-penetration condition above.
+
+\textbf{Stick (no slip):} $v_{slip}=0$ is imposed as a kinematic constraint. Dropping the $l_{2a,rr}$ term from $\vv{Ab_{2a}}$ here (it is much smaller than $r_{2a}$, so its contribution to $\vv{\omega}_{2a}\times\vv{Ab_{2a}}$ is a second-order correction to the constraint, not to the moment balance where it was kept):
+\begin{equation}
+    {}^{x_0}v_{2a,A} = -r_{2a}\,\omega_{2a},
+\end{equation}
+and ${}^{x_0}R_{2a/0}$ becomes an unknown constraint force, solved from the equations of motion, valid as long as it stays within the friction bound $|{}^{x_0}R_{2a/0}|\le\mu_s\,{}^{z_0}R_{2a/0}$ above.
+
+\textbf{Slip:} once holding $v_{slip}=0$ would require $|{}^{x_0}R_{2a/0}|>\mu_s\,{}^{z_0}R_{2a/0}$, the constraint is dropped -- $v_{slip}$ becomes a free kinematic variable governed by the dynamics -- and friction switches to the kinetic law
+\begin{equation}
+    {}^{x_0}R_{2a/0} = -\mu_k\,{}^{z_0}R_{2a/0}\,\sgn(v_{slip}), \qquad \mu_k \le \mu_s.
+\end{equation}
+
+Together, the contact/airborne switch and the stick/slip switch make this a hybrid (mode-switching) system; a numerical solver would typically resolve both via complementarity (LCP) or event-driven mode detection rather than a single closed-form equation set.
+
+Same relations hold for the front wheel with $2a\to2b$, $A\to B$ (its own axle center, matching the frame's own label for the front axle -- see \S\ref{app:notation-points}), $b_{2a}\to b_{2b}$, and $r_{2a}\to r_{2b}$, $l_{2a,rr}\to l_{2b,rr}$ -- none of these need be equal front to rear, e.g.\ for a bike with different wheel sizes or tire pressures.

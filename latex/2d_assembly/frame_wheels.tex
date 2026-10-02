@@ -1,0 +1,13 @@
+\subsection{Frame -- Wheels}
+\label{sec:frame-wheels}
+Both axles are revolute (pin) joints: frame points $A$, $B$ and each wheel's own axle center, labeled the same (see \S\ref{app:notation-points}), are the same material points at all times,
+\begin{equation}
+    \vv{A_1A_{2a}} = \vv{0}, \qquad \vv{B_1B_{2b}} = \vv{0} \qquad \forall t,
+\end{equation}
+hence the material points' velocities and accelerations match too, $\vv{v}_{1,A}=\vv{v}_{2a,A}$, $\vv{a}_{1,A}=\vv{a}_{2a,A}$ (and the $B$ analogs).
+
+Each wheel spins freely about the hub axis $\hat y$, by the relative spin angle $\phi_{2a}$ (and $\phi_{2b}$) -- the quantity Drivetrain will ultimately drive, since gearing relates relative, not absolute, rotation rates:
+\begin{align}
+    \theta_{2a} &= \theta_1 + \phi_{2a}, \\
+    \theta_{2b} &= \theta_1 + \phi_{2b}.
+\end{align}

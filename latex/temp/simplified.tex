@@ -1,0 +1,566 @@
+\documentclass[10pt]{extarticle}
+
+\usepackage{fancyhdr, geometry, hyperref, xcolor, amsmath, amsfonts, subcaption, graphicx, tikz, nomencl, bm}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{arrows.meta,arrows}
+\usepackage[export]{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{pdflscape}
+
+\geometry {
+    a4paper,
+    total={170mm,257mm},
+    left=20mm,
+    top=20mm,
+}
+
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\fancyhead[L]{Bike - Simplified}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={blue!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\numberwithin{equation}{subsubsection}
+\makenomenclature
+\newcommand{\sgn}{\operatorname{sgn}}
+
+\newcommand{\dr}[2]{$\displaystyle #1$ & $\displaystyle #2$ \\[4pt]}
+\newcommand{\drl}[1]{$\displaystyle #1$ & \\[4pt]}
+
+\newenvironment{twocol}{%
+    \begin{center}
+    \begin{tabular}{@{} l @{\qquad\quad} l @{}}
+}{%
+    \end{tabular}
+    \end{center}
+}
+
+\begin{document}
+\section{Bike systems}
+
+\subsection{List}
+\begin{enumerate}
+    \item Frame
+    \item Wheel rear
+    \item Wheel front
+    \item Drivetrain
+\end{enumerate}
+To Add
+\begin{itemize}
+    \item FBD, dimensions diagrams
+\end{itemize}
+
+% =====================================================================
+\newpage
+\subsection{Bike}
+% =====================================================================
+
+% COMMENT: "total bike system" means frame + both wheels + drivetrain treated as one body.
+% The internal forces (axle reactions, chain tension) do not appear here — they cancel.
+The equation of motion is written for the total bike system. Internal forces between subsystems cancel and do not appear.
+
+\textbf{Assumptions}
+\begin{itemize}
+    \item Rigid frame --- no compliance, no rider motion relative to frame
+    \item Point mass at fixed height $h$ --- rider and frame CG collocated and invariant
+    \item Motion confined to the $x$--$z$ plane --- straight-line travel, no yaw or roll
+    \item Constant road gradient $\theta_1$ --- no curvature or undulation
+    \item Two contact points only --- front and rear tyre, no additional supports
+    \item Aerodynamic lift neglected --- drag and pitching moment only
+    \item Wind in the $x$--$z$ plane --- no crosswind
+    \item Rolling resistance as contact resultant shift (Option A) --- no separate resistance moment
+    \item Both tyres share the same $c_{rr}$ and $r_w$
+\end{itemize}
+
+\subsubsection{Forces}
+
+% COMMENT: weight is in the ground frame here; the road-frame projection appears in Translation.
+Weight acts at the system centre of gravity $a$ in the ground frame:
+\begin{equation}
+    \vec{W}_1 = mg\,\hat{z}_g
+\end{equation}
+
+% COMMENT: tire deformation shifts the contact resultant forward of the geometric contact point
+% by e = c_rr * r_w. C and D are therefore not the geometric contact points but the shifted ones.
+% This is Option A: the shift is absorbed into the moment arms in Geometry; no separate rolling
+% resistance moment appears in the EOM.
+Under load, tire deformation shifts the contact resultant forward of the geometric contact by $e = c_{rr}r_w$. Points $C$ and $D$ denote these shifted contact locations. The ground reactions at $C$ and $D$ are decomposed in the road frame $(\hat{x}_b, \hat{z}_b)$:
+\begin{gather}
+    \vec{R}_{2,0C} = R_{2,0Cx}\,\hat{x}_b + R_{2,0Cz}\,\hat{z}_b \\
+    \vec{R}_{3,0D} = R_{3,0Dx}\,\hat{x}_b + R_{3,0Dz}\,\hat{z}_b
+\end{gather}
+
+% COMMENT: aerodynamic lift is neglected. A_{1m} is the pitching moment (nose-down positive here).
+% Both are expressed in the road frame; wind direction enters through v_rel in the expansion.
+Aerodynamic drag and pitching moment act on the frame, neglecting lift:
+\begin{gather}
+    \vec{A}_{1f} = -A_{1fx}\,\hat{x}_b \\
+    \vec{A}_{1m} = -A_{1my}\,\hat{y}_b
+\end{gather}
+
+\subsubsection{Geometry}
+
+% COMMENT: l_2, l_3 are measured from the CG to the geometric wheel contact points (not the shifted ones).
+% The effective arms l_2', l_3' absorb the rolling resistance offset e*sigma and are used in the moment equation.
+% sigma = sgn(x_dot) keeps the offset directed forward regardless of travel direction;
+% for a bike sigma = +1 always but it is kept for formal completeness.
+% aA is the vector from CG to the rear axle, used as the aerodynamic pitching moment application point.
+Horizontal distances $l_2$, $l_3$ are measured from the system CG $a$ to the geometric wheel contact points. The rolling resistance offset $e$ shifts the contact resultant forward; $\sigma$ ensures this shift is always in the direction of motion:
+\begin{gather}
+    L = l_2 + l_3 \qquad e = c_{rr}\,r_w \qquad \sigma = \sgn(\dot{x}_1) \\
+    l_2' = l_2 - e\sigma \qquad l_3' = l_3 + e\sigma
+\end{gather}
+The position vectors from $a$ to each force application point, expressed in the road frame:
+\begin{gather}
+    \vec{aC} = (-l_2 + e\sigma)\,\hat{x}_b + h\,\hat{z}_b \\
+    \vec{aD} = (+l_3 + e\sigma)\,\hat{x}_b + h\,\hat{z}_b \\
+    \vec{aA} = -l_2\,\hat{x}_b + (h - r_w)\,\hat{z}_b
+\end{gather}
+
+\subsubsection{Equations of motion}
+
+% COMMENT: \dot{H}_a is the rate of change of angular momentum about the system CG a.
+% It is not simply I_1*theta_ddot_1 because the spinning wheels and crank contribute;
+% the expansion into individual inertia terms is shown in Rotation below.
+The moment equation uses $\dot{\vec{H}}_a$, the rate of change of angular momentum about $a$, rather than a single body inertia, because the spinning wheels and crankset each contribute angular momentum independently:
+\begin{align}
+    m\,\vec{\ddot{x}}_1 &= \sum \vec{F}_1 = \vec{W}_1 + \vec{R}_{2,0C} + \vec{R}_{3,0D} + \vec{A}_{1f} \\[6pt]
+    \dot{\vec{H}}_a &= \sum \vec{M}_1(a) = \vec{aC}\times\vec{R}_{2,0C} + \vec{aD}\times\vec{R}_{3,0D} + \vec{aA}\times\vec{A}_{1f} + \vec{A}_{1m}
+\end{align}
+
+\subsubsection{Translation}
+
+% COMMENT: the vertical equation gives the static load constraint (ddot{z}_1 = 0, A_{1fz} = 0).
+% It is used in Assembly to solve for normal reactions without needing the moment equation.
+Weight is projected onto the road frame using the gradient angle $\theta_1$. The vertical equation enforces the constraint that the bike remains on the road:
+\begin{align}
+    m\,\ddot{x}_1 &= -mg\sin\theta_1 + R_{2,0Cx} + R_{3,0Dx} - A_{1fx} \\
+    0               &= mg\cos\theta_1 + R_{2,0Cz} + R_{3,0Dz}
+\end{align}
+
+\subsubsection{Rotation}
+
+% COMMENT: \dot{H}_y = sum I_k * theta_ddot_k because all bodies translate together so the
+% transport terms in H vanish, and sum m_k * a_{a_k} = 0 since a is the system CG.
+% The frame does not rotate (theta_ddot_1 = 0) so only wheels and crank appear on the left.
+% The right side expands the cross products using the geometry defined above.
+Since all subsystems translate together, the transport terms in $\dot{H}_a$ vanish and only the spin inertias remain. The frame does not rotate ($\ddot{\theta}_1 = 0$), so:
+\begin{align}
+    \dot{H}_y &= I_2\ddot{\theta}_2 + I_3\ddot{\theta}_3 + I_4\ddot{\theta}_4 \\
+    \dot{H}_y &= h\left(R_{2,0Cx} + R_{3,0Dx}\right) + l_2'\,R_{2,0Cz} - l_3'\,R_{3,0Dz}
+               - \left(h - r_w\right)A_{1fx} - A_{1my}
+\end{align}
+
+% =====================================================================
+\newpage
+\subsection{Wheels}
+% =====================================================================
+
+% COMMENT: each wheel is treated as an independent rigid body rotating about its fixed axle.
+% The axle reaction R_{k,1} (frame on wheel) passes through the axle and produces no moment
+% about it, so it does not appear in the wheel rotation equations.
+Each wheel is an independent rigid body. Moments are taken about the axle to eliminate the axle reaction, which passes through it and produces no moment.
+
+\textbf{Assumptions}
+\begin{itemize}
+    \item Each wheel is a rigid body with uniform mass distribution --- CG at the axle
+    \item Axle fixed relative to the frame --- no suspension travel
+    \item Wheel spin axis is $\hat{y}_b$ --- no camber or toe
+    \item Contact patch is a point --- no contact patch width or length effects
+    \item No lateral forces --- pure longitudinal contact resultant in the $x$--$z$ plane
+    \item Brake force acts at a single effective radius $r_{bk,k}$ --- caliper geometry collapsed
+    \item No wheel flex or tyre sidewall compliance
+\end{itemize}
+
+\subsubsection{Geometry}
+
+% COMMENT: AC = BD because both wheels share the same radius and rolling resistance coefficient.
+% A and B are the rear and front axle locations. F is the cog tooth contact point on the rear wheel.
+% J and K are the brake pad contact points on rear and front respectively.
+Both wheels share the same radius $r_w$ and rolling resistance coefficient $c_{rr}$, so the axle-to-contact vector is identical for both. The chain and brake moment arms are specific to each wheel:
+\begin{equation}
+    |\vec{AF}| = r_{cg} \qquad |\vec{AJ}| = r_{bk,2} \qquad |\vec{BK}| = r_{bk,3}
+\end{equation}
+The axle-to-contact resultant vector, expressed in the road frame:
+\begin{equation}
+    \vec{AC} = \vec{BD} = e\sigma\,\hat{x}_b + r_w\,\hat{z}_b
+\end{equation}
+
+\subsubsection{Forces}
+
+% COMMENT: T_{2,4} pulls on the rear wheel at F along the chain span toward the chainring.
+% B_{k,1} is the brake pad friction acting tangentially at the effective brake radius, opposing spin.
+% The front wheel carries no chain force.
+The chain tension acts only on the rear wheel at the cog contact point $F$. Brake forces act tangentially at the effective pad radius on whichever wheel is braked:
+\begin{gather}
+    \vec{T}_{2,4} = T_{2,4}\,\hat{e}_{span} \\
+    \vec{B}_{k,1} = B_{k,1}\,\hat{e}_{t,bk}, \quad k = 2,3
+\end{gather}
+
+\subsubsection{Equations of motion}
+
+% COMMENT: wheel weight passes through the axle (CG at axle for a uniform wheel), so it
+% produces no moment about the axle either.
+Expanding the cross products with the geometry above, noting that $\vec{R}_{k,1A}$ and $\vec{W}_k$ both act through the axle and vanish:
+\begin{align}
+    I_2\ddot{\theta}_2 &= \sum \vec{M}_2(A)\cdot\hat{y}
+        = \bigl[\vec{AC}\times\vec{R}_{2,0C} + \vec{AF}\times\vec{T}_{2,4}
+          + \vec{AJ}\times\vec{B}_{2,1}\bigr]\cdot\hat{y} \\[6pt]
+    I_3\ddot{\theta}_3 &= \sum \vec{M}_3(B)\cdot\hat{y}
+        = \bigl[\vec{BD}\times\vec{R}_{3,0D}
+          + \vec{BK}\times\vec{B}_{3,1}\bigr]\cdot\hat{y}
+\end{align}
+
+\subsubsection{Rear wheel}
+
+The traction force $R_{2,0Cx}$ drives the wheel; the normal load $R_{2,0Cz}$ contributes a rolling resistance moment through the offset $e\sigma$; chain tension resists spin; braking resists spin:
+\begin{equation}
+    I_2\ddot{\theta}_2 = r_w\,R_{2,0Cx} - e\sigma\,R_{2,0Cz}
+        - r_{cg}\,T_{2,4} + \sigma\,r_{bk,2}\,B_{2,1}
+\end{equation}
+
+\subsubsection{Front wheel}
+
+The front wheel carries no chain force. Only the contact resultant and the brake act:
+\begin{equation}
+    I_3\ddot{\theta}_3 = r_w\,R_{3,0Dx} - e\sigma\,R_{3,0Dz}
+        + \sigma\,r_{bk,3}\,B_{3,1}
+\end{equation}
+
+% =====================================================================
+\newpage
+\subsection{Drivetrain}
+% =====================================================================
+
+% COMMENT: the drivetrain here is the crankset only (chainring + cranks + pedals).
+% The cassette is part of the rear wheel subsystem. A fixed gear ratio r_cg/r_cr is assumed.
+The drivetrain subsystem comprises the crankset: chainring, cranks, and pedals. The cassette is treated as part of the rear wheel. A fixed gear ratio $r_{cg}/r_{cr}$ is assumed throughout.
+
+\textbf{Assumptions}
+\begin{itemize}
+    \item Fixed gear ratio --- no derailleur shifting, single chainring and cog
+    \item No drivetrain efficiency loss --- chain transmits torque without friction
+    \item Chain mass neglected --- chain inertia not modelled
+    \item Crankset is a rigid body with CG at the BB axle $E$
+    \item Pedal force acts tangentially at the crank tip --- no radial component
+    \item Left and right cranks combined as a single effective torque
+    \item No freewheel modelled explicitly --- $T_{2,4} \ge 0$ enforced as a post-check
+\end{itemize}
+
+\subsubsection{Geometry}
+
+% COMMENT: E is the bottom bracket axle. G is the chainring tooth contact point.
+% H_L, H_R are the left and right pedal spindle locations; r_p is the crank length.
+% Moments are taken about E to eliminate the BB axle reaction and crankset weight.
+$E$ is the bottom bracket axle, the rotation centre of the crankset. The chainring engages the chain at $G$; the rider applies force at the pedal spindles $H_L$, $H_R$. The relevant moment arms are:
+\begin{equation}
+    |\vec{EG}| = r_{cr} \qquad |\vec{EH_L}| = |\vec{EH_R}| = r_p
+\end{equation}
+
+\subsubsection{Forces}
+
+% COMMENT: T_{4,2} is the Newton's third law reaction to T_{2,4}: the chain pulls the chainring
+% forward (driving direction) with the same magnitude it pulls the cog backward.
+% P_{4,1s} is the pedal force from the rider, signed positive in the driving direction.
+The chain pulls the chainring at $G$ with the same tension it pulls the cog, by Newton's third law. The rider applies pedal forces tangentially at each crank tip:
+\begin{gather}
+    \vec{T}_{4,2} = -\vec{T}_{2,4} \\
+    \vec{P}_{4,1s} = P_{4,1s}\,\hat{e}_{t,s}, \quad s = L,R
+\end{gather}
+
+\subsubsection{Equations of motion}
+
+% COMMENT: BB axle reaction and crankset weight both pass through E and produce no moment.
+Moments about $E$ eliminate the BB axle reaction and crankset weight:
+\begin{equation}
+    I_4\ddot{\theta}_4 = \sum \vec{M}_4(E)\cdot\hat{y}
+        = \bigl[\vec{EG}\times\vec{T}_{4,2}
+          + \vec{EH_L}\times\vec{P}_{4,1L}
+          + \vec{EH_R}\times\vec{P}_{4,1R}\bigr]\cdot\hat{y}
+\end{equation}
+
+\subsubsection{Crankset}
+
+Pedal force drives the crankset; chain tension resists it:
+\begin{equation}
+    I_4\ddot{\theta}_4 = r_{cr}\,T_{2,4} - r_p\left(P_{4,1L} + P_{4,1R}\right)
+\end{equation}
+
+% =====================================================================
+\newpage
+\subsection{Assembly}
+% =====================================================================
+
+% COMMENT: the four subsystems are coupled through three kinematic constraints: no-slip at both
+% contacts and the fixed chain ratio. These reduce all angular accelerations to one unknown: ddot{x}_1.
+The four subsystems are coupled through three kinematic constraints: no-slip at each contact and the fixed chain ratio. All angular accelerations reduce to a single unknown $\ddot{x}_1$. The solve order has no algebraic loop: the EOM gives $\ddot{x}_1$ first, then reactions are post-processed in sequence.
+
+\textbf{Assumptions}
+\begin{itemize}
+    \item No-slip at both contacts --- wheels roll without sliding
+    \item Kinematic constraint is holonomic --- $\dot{x}_1 = -r_w\dot{\theta}_2 = -r_w\dot{\theta}_3$ at all times
+    \item Chain does not slip on sprockets --- gear ratio is exact
+    \item All assumptions from Bike, Wheels, and Drivetrain carry forward
+\end{itemize}
+
+\subsubsection{Kinematics}
+
+% COMMENT: no-slip gives theta_ddot_k = -x_ddot / r_w. The sign follows from hat{y} pointing
+% right: forward motion (positive x_dot) corresponds to negative wheel rotation.
+% The chain ratio r_cg/r_cr then fixes theta_ddot_4.
+No-slip at each contact relates wheel angular acceleration to frame linear acceleration. The chain ratio propagates this to the crankset:
+\begin{align}
+    \ddot{\theta}_1 &= 0 \\
+    \ddot{\theta}_2 = \ddot{\theta}_3 &= -\frac{\ddot{x}_1}{r_w} \\
+    \ddot{\theta}_4 &= -\frac{r_{cg}}{r_{cr}\,r_w}\,\ddot{x}_1
+\end{align}
+
+\subsubsection{Chain tension}
+
+% COMMENT: kinematics substituted into the crankset equation and solved for T_{2,4}.
+% The first term is inertial (crankset resists acceleration); the second is the pedal input.
+% If T_{2,4} < 0 the chain would need to push, which it cannot: freewheel condition.
+Substituting kinematics into the crankset equation and solving for $T_{2,4}$. The first term captures crankset inertia; the second is the pedal input referred to the chain:
+\begin{equation}
+    \boxed{T_{2,4} = -\frac{I_4\,r_{cg}}{r_{cr}^2\,r_w}\,\ddot{x}_1
+           + \frac{r_p}{r_{cr}}\left(P_{4,1L} + P_{4,1R}\right)}
+\end{equation}
+
+\subsubsection{Traction}
+
+% COMMENT: kinematics substituted into each wheel equation and solved for R_{k,0x}.
+% These are the horizontal ground forces required to sustain the motion — checked against
+% the traction limit in Limits.
+Substituting kinematics into each wheel equation and solving for the longitudinal ground reaction. These are the horizontal forces the ground must supply; they are checked against the friction limit below:
+\begin{align}
+    \boxed{R_{2,0Cx} = -\frac{I_2}{r_w^2}\,\ddot{x}_1
+        + c_{rr}\sigma\,R_{2,0Cz}
+        + \frac{r_{cg}}{r_w}\,T_{2,4}
+        - \frac{\sigma\,r_{bk,2}}{r_w}\,B_{2,1}} \\
+    \boxed{R_{3,0Dx} = -\frac{I_3}{r_w^2}\,\ddot{x}_1
+        + c_{rr}\sigma\,R_{3,0Dz}
+        - \frac{\sigma\,r_{bk,3}}{r_w}\,B_{3,1}}
+\end{align}
+
+\subsubsection{Normal reactions}
+
+% COMMENT: obtained from the bike rotation equation after substituting kinematics and traction.
+% K collects the moment terms that do not depend on the front/rear split.
+% The EOM itself needs only the sum R_{2,0Cz} + R_{3,0Dz} = -mg cos(theta), so the split
+% is pure post-processing and does not affect the equation of motion.
+The rotation equation, after substituting kinematics and traction, yields the auxiliary quantity $K$ which collects all contributions to the pitching moment. The normal reactions follow from $K$ and the vertical equilibrium. Note that the EOM needs only the sum of the normal loads, so this step is post-processing:
+\begin{align}
+    \boxed{R_{2,0Cz} = \frac{K - l_3'\,mg\cos\theta_1}{L}} \qquad
+    \boxed{R_{3,0Dz} = -\frac{K + l_2'\,mg\cos\theta_1}{L}}
+\end{align}
+\begin{equation}
+    K = -\frac{J}{r_w}\,\ddot{x}_1
+        - hm\!\left(\ddot{x}_1 + g\sin\theta_1\right)
+        - r_w\,A_{1fx} + A_{1my},
+    \qquad
+    J = I_2 + I_3 + \frac{r_{cg}}{r_{cr}}\,I_4
+\end{equation}
+
+\subsubsection{Equation of motion}
+
+% COMMENT: obtained by substituting the traction expressions into the bike translation equation
+% and using R_{2,0Cz} + R_{3,0Dz} = -mg cos(theta) to collapse the rolling resistance terms.
+% m_eq is the total inertia of the system referred to the linear acceleration of the frame;
+% it includes the rotational inertia of both wheels and the crankset reflected through the gear ratio.
+Substituting traction into the bike translation equation and using $R_{2,0Cz} + R_{3,0Dz} = -mg\cos\theta_1$ collapses the rolling resistance terms. The effective mass $m_{eq}$ reflects all rotational inertias to the frame linear acceleration:
+\begin{equation}
+    \resizebox{\linewidth}{!}{$\displaystyle
+    \boxed{
+    m_{eq}\,\ddot{x}_1 =
+        \frac{r_p\,r_{cg}}{r_{cr}\,r_w}\left(P_{4,1L} + P_{4,1R}\right)
+        - \frac{\sigma}{r_w}\left(r_{bk,2}\,B_{2,1} + r_{bk,3}\,B_{3,1}\right)
+        - mg\sin\theta_1
+        - \sigma\,c_{rr}\,mg\cos\theta_1
+        - A_{1fx}
+    }$}
+\end{equation}
+\begin{equation}
+    m_{eq} = m + \frac{I_2 + I_3}{r_w^2} + \frac{I_4\,r_{cg}^2}{r_{cr}^2\,r_w^2}
+\end{equation}
+
+\subsubsection{Limits}
+
+The following conditions must hold for the model assumptions to remain valid. Violation of any one signals a regime change: wheel lift, chain slack, or sliding contact:
+\begin{align}
+    R_{2,0Cz} &\le 0, \qquad R_{3,0Dz} \le 0 \qquad \text{(no wheel lift)} \\
+    \left|R_{2,0Cx}\right| &\le -\mu_s\,R_{2,0Cz}, \qquad
+    \left|R_{3,0Dx}\right| \le -\mu_s\,R_{3,0Dz} \qquad \text{(no slip)} \\
+    T_{2,4} &\ge 0 \qquad \text{(no freewheel)}
+\end{align}
+
+% =====================================================================
+\newpage
+\subsection{Analysis}
+% =====================================================================
+
+\textbf{Assumptions}
+\begin{itemize}
+    \item Steady state --- $\ddot{x}_1 = 0$, constant speed on constant gradient
+    \item No braking --- $B_{2,1} = B_{3,1} = 0$
+    \item Forward motion --- $\sigma = 1$
+    \item Still air or head/tailwind only --- drag enters as $\tfrac{1}{2}\rho c_x A v_{rel}^2$
+    \item Drivetrain efficiency not modelled --- power input equals power at the chain
+    \item All limits satisfied --- no slip, no wheel lift, no freewheel
+\end{itemize}
+
+\subsubsection{Equilibrium}
+
+% COMMENT: steady state on a constant gradient, no braking, forward motion (sigma = 1).
+% Expressing the left side as power P eliminates the gear ratio and crank geometry —
+% only drivetrain efficiency (not yet modelled) would remain if added.
+Setting $\ddot{x}_1 = 0$, $B_{2,1} = B_{3,1} = 0$, $\sigma = 1$ gives the steady-state force balance. Three resistance terms appear: gradient, rolling, and aerodynamic drag, scaling respectively as $v^0$, $v^0$, and $v^2$:
+\begin{equation}
+    \frac{r_p\,r_{cg}}{r_{cr}\,r_w}\left(P_{4,1L} + P_{4,1R}\right) = mg\left(c_{rr}\cos\theta_1 + \sin\theta_1\right) + \tfrac{1}{2}\rho\,c_x A\,v^2
+\end{equation}
+Expressing the left side as prescribed power $\mathcal{P}$ using $|\dot{\theta}_4| = r_{cg}v/(r_{cr}r_w)$ eliminates the gear geometry:
+\begin{equation}
+    \frac{\mathcal{P}}{v} = mg\left(c_{rr}\cos\theta_1 + \sin\theta_1\right) + \tfrac{1}{2}\rho\,c_x A\,v^2
+\end{equation}
+
+\subsubsection{Sensitivity}
+
+% COMMENT: full treatment following the uploaded FX27 document and Notion §6 analysis targets.
+% The equilibrium cubic is simplified to P = mgv sin(theta) + kv^3 by dropping rolling
+% resistance (order of magnitude smaller) to keep the sensitivity structure clean.
+% Elasticities are derived by implicit differentiation; three questions are then answered
+% by reading off the two gradient limits.
+
+Write the aerodynamic drag power as $k \equiv \tfrac{1}{2}\rho\,c_x A$ and drop rolling resistance
+(an order of magnitude below gravity and drag at any sustained speed), leaving the simplest model
+that still contains both effects each question is about:
+\begin{equation}
+    \mathcal{P} = mg\,v\sin\theta_1 + k\,v^3
+\end{equation}
+
+\paragraph{Elasticities.}
+The elasticity $E_p \equiv (p/v)(\partial v/\partial p)$ gives the fractional change in speed per
+fractional change in parameter $p$, at constant $\mathcal{P}$. Write the balance as
+$G(v;\,m,k,\theta_1,\mathcal{P}) = mg\,v\sin\theta_1 + k\,v^3 - \mathcal{P} = 0$ and
+differentiate implicitly:
+\begin{equation}
+    \frac{\partial v}{\partial p} = -\frac{\partial G/\partial p}{\partial G/\partial v},
+    \qquad
+    \frac{\partial G}{\partial v} = mg\sin\theta_1 + 3kv^2 \equiv D
+\end{equation}
+\begin{equation}
+    \boxed{E_m = -\frac{mg\sin\theta_1}{D}, \qquad
+           E_k = -\frac{kv^2}{D}, \qquad
+           E_{\mathcal{P}} = \frac{mg\sin\theta_1 + kv^2}{D}}
+\end{equation}
+Since $G$ is linear in $(m, k, \mathcal{P})$ at fixed $v$, Euler's theorem gives the exact identity:
+\begin{equation}
+    E_m + E_k + E_{\mathcal{P}} = 0
+\end{equation}
+
+\paragraph{Two gradient limits.}
+\textbf{Flat, aero-dominated} ($mg\sin\theta_1 \ll kv^2$, $D \approx 3kv^2$):
+\begin{equation}
+    E_m \approx 0, \qquad E_k \approx -\tfrac{1}{3}, \qquad E_{\mathcal{P}} \approx \tfrac{1}{3}
+    \quad\Longrightarrow\quad v \propto \mathcal{P}^{1/3},\;\; v \propto k^{-1/3}
+\end{equation}
+Weight is irrelevant on the flat; speed depends only on power and drag, and weakly (cube root).
+
+\textbf{Steep, gravity-dominated} ($kv^2 \ll mg\sin\theta_1$, $D \approx mg\sin\theta_1$):
+\begin{equation}
+    E_m \approx -1, \qquad E_k \approx 0, \qquad E_{\mathcal{P}} \approx 1
+    \quad\Longrightarrow\quad v \approx \frac{\mathcal{P}}{mg\sin\theta_1}
+\end{equation}
+Aerodynamics is irrelevant while climbing; speed is set entirely by power-to-weight.
+
+\paragraph{Does aerodynamics matter more for a lighter rider?}
+Two riders with the same $\mathcal{P}$ and $k$, differing only in mass. Since $E_m < 0$ the
+lighter rider is faster. Differentiate $|E_k| = kv^2/D$ along the equilibrium curve:
+\begin{equation}
+    \frac{\mathrm{d}|E_k|}{\mathrm{d}v} = \frac{2kv\,mg\sin\theta_1}{D^2} > 0
+\end{equation}
+$|E_k|$ is strictly increasing in $v$, so aerodynamics matters strictly more to the lighter
+(faster) rider. The gap is smallest while climbing ($|E_k|\approx 0$ for both) and largest on
+the flat ($|E_k|\to\tfrac{1}{3}$ for both).
+
+\paragraph{Is there a best rider weight?}
+Comparing riders of different size: power and frontal area both scale with mass. Model with
+exponents against a reference rider $(m_0, \mathcal{P}_0, k_0)$:
+\begin{equation}
+    \mathcal{P}(m) = \mathcal{P}_0\!\left(\frac{m}{m_0}\right)^{a}, \qquad
+    k(m) = k_0\!\left(\frac{m}{m_0}\right)^{b}
+\end{equation}
+($b \approx \tfrac{2}{3}$ from geometric similarity; $a$ is physiological, typically $a < 1$.)
+The size elasticity follows by chain rule:
+\begin{equation}
+    \boxed{\left.\frac{\mathrm{d}\ln v}{\mathrm{d}\ln m}\right|_{\text{across riders}}
+    = E_m + a\,E_{\mathcal{P}} + b\,E_k}
+\end{equation}
+Plugging in the two limits: climbing gives $\approx a - 1 < 0$ (smaller always wins for $a < 1$);
+flat gives $\approx (a-b)/3$ (bigger wins if power scales faster than frontal area, $a > b$).
+Best weight flips sign with gradient; the crossover depends on $a - b$, not on mass directly.
+
+\paragraph{Is a steeper climb more energy-efficient for the same height gain?}
+Fix height $\Delta h$; route length is $d(\gamma) = \Delta h / \sin\theta_1$. Energy spent at
+constant power $\mathcal{P}$:
+\begin{equation}
+    E(\theta_1) = \mathcal{P}\,\frac{d(\theta_1)}{v(\theta_1)}
+    = \frac{\mathcal{P}\,\Delta h}{v(\theta_1)\sin\theta_1}
+\end{equation}
+From the power balance, $v\sin\theta_1 = (\mathcal{P} - kv^3)/(mg)$, which is maximised by
+minimising $v$. Since $\partial v/\partial\theta_1 < 0$ (steeper is slower),
+$v\sin\theta_1$ rises monotonically with gradient and $E(\theta_1)$ falls:
+\begin{equation}
+    \frac{\mathrm{d}E}{\mathrm{d}\theta_1} < 0
+    \;\Longrightarrow\;
+    \text{steeper is always more energy-efficient for a fixed height gain}
+\end{equation}
+Mechanism: a steeper route is shorter and slower; aerodynamic loss scales as $v^2 \times
+\text{distance}$, so cutting speed helps cubically while the shorter distance helps linearly.
+
+\subsubsection{Stoppie limit}
+
+% COMMENT: rear wheel lift under hard front braking. Setting R_{2,0Cz} = 0 in the normal
+% reaction expression gives K directly; substituting into the K definition yields the
+% critical deceleration. Aero terms are retained for completeness.
+Front braking transfers load forward. The rear wheel lifts when $R_{2,0Cz} = 0$. Setting this in the normal reaction expression fixes $K$, which is then substituted into its definition to give the critical deceleration:
+\begin{equation}
+    R_{2,0Cz} = 0 \;\Rightarrow\; K = l_3'\,mg\cos\theta_1
+\end{equation}
+\begin{equation}
+    \ddot{x}_{1,\text{stoppie}} = \frac{-\left(l_3'\,mg\cos\theta_1 + hm\,g\sin\theta_1 + r_w\,A_{1fx} - A_{1my}\right)}{J/r_w + hm}
+\end{equation}
+
+\subsubsection{Wheelie limit}
+
+% COMMENT: front wheel lift under hard acceleration. Same procedure with R_{3,0Dz} = 0.
+% On a steep climb the gradient term assists the wheelie; the aero pitching moment A_{1my}
+% acts nose-down and therefore resists it.
+Hard acceleration transfers load rearward. The front wheel lifts when $R_{3,0Dz} = 0$:
+\begin{equation}
+    R_{3,0Dz} = 0 \;\Rightarrow\; K = -l_2'\,mg\cos\theta_1
+\end{equation}
+\begin{equation}
+    \ddot{x}_{1,\text{wheelie}} = \frac{l_2'\,mg\cos\theta_1 - hm\,g\sin\theta_1 - r_w\,A_{1fx} + A_{1my}}{J/r_w + hm}
+\end{equation}
+
+\subsubsection{Traction limit}
+
+% COMMENT: slip is checked per wheel after the normal reactions are known from post-processing.
+% Under the no-slip assumption it does not feed back into the EOM — it is a validity check only.
+% The available friction budget is split between driving and braking at each wheel; exceeding
+% it at either wheel invalidates the model for that wheel.
+Slip is checked after the normal reactions are known. It does not feed back into the EOM — the no-slip assumption is either valid or it is not, and violation signals that a different model (e.g.\ with combined slip) is required. The available friction at each contact is $\mu_s |R_{k,0z}|$; the longitudinal force must stay within it:
+\begin{align}
+    \left|R_{2,0Cx}\right| &\le -\mu_s\,R_{2,0Cz} \;\Rightarrow\; \text{rear contact valid} \\
+    \left|R_{3,0Dx}\right| &\le -\mu_s\,R_{3,0Dz} \;\Rightarrow\; \text{front contact valid}
+\end{align}
+
+\end{document}

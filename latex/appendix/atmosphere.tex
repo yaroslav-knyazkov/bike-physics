@@ -1,0 +1,38 @@
+\subsection{ISA (International Standard Atmosphere)}
+\label{app:isa}
+Troposphere ($h\le11\,\text{km}$, well above any cyclable altitude): temperature falls linearly with altitude, and pressure/density follow from the hydrostatic and ideal-gas relations:
+\begin{align}
+    T(h) &= T_0 - L h, \\
+    p(h) &= p_0\left(1 - \frac{Lh}{T_0}\right)^{\textstyle\frac{g_0 M}{RL}}, \\
+    \rho(h) &= \frac{p(h)}{R_d\,T(h)},
+\end{align}
+with sea-level reference $T_0=288.15\,\text{K}$, $p_0=101325\,\text{Pa}$, lapse rate $L=0.0065\,\text{K/m}$, standard gravity $g_0=9.80665\,\text{m/s}^2$, molar mass of air $M=0.0289644\,\text{kg/mol}$, universal gas constant $R=8.31446\,\text{J/(mol\,K)}$, and specific gas constant for dry air $R_d=R/M\approx287.05\,\text{J/(kg\,K)}$.
+
+\begin{center}
+\begin{tabular}{c c c c}
+    $h$ (m) & $T$ ($^\circ$C) & $p$ (kPa) & $\rho$ (kg/m$^3$) \\
+    \hline
+    0 & 15.0 & 101.3 & 1.225 \\
+    1000 & 8.5 & 89.9 & 1.112 \\
+    2000 & 2.0 & 79.5 & 1.007 \\
+    3000 & -4.5 & 70.1 & 0.909 \\
+    4000 & -11.0 & 61.6 & 0.819 \\
+    5000 & -17.5 & 54.0 & 0.736 \\
+\end{tabular}
+\end{center}
+
+\subsection{Humidity-adjusted density}
+\label{app:humidity-density}
+Moist air is less dense than dry air at the same temperature and pressure (water vapor molecules are lighter than N$_2$/O$_2$), so $\rho$ from \S\ref{app:isa} needs a correction once relative humidity $RH$ is known:
+\begin{equation}
+    \rho = \frac{p}{R_d T}\left(1 - \Big(1-\frac{R_d}{R_v}\Big)\frac{e}{p}\right), \qquad e = RH\,e_s(T), \qquad e_s(T) = 0.61078\exp\!\left(\frac{17.27\,T}{T+237.3}\right),
+\end{equation}
+with $R_d\approx287.05\,\text{J/(kg\,K)}$ (\S\ref{app:isa}) and $R_v\approx461.5\,\text{J/(kg\,K)}$ the specific gas constants for dry air and water vapor respectively, $e$ the water vapor partial pressure, $RH\in[0,1]$ relative humidity, and $e_s(T)$ the saturation vapor pressure (Tetens' formula, $T$ in $^\circ$C, $e_s$ in kPa).
+
+\subsection{Viscosity (Sutherland's law)}
+\label{app:sutherland}
+Dynamic viscosity of a gas rises with temperature (the opposite of a liquid), via
+\begin{equation}
+    \mu(T) = \mu_0\left(\frac{T}{T_0}\right)^{3/2}\frac{T_0+S}{T+S},
+\end{equation}
+with reference viscosity $\mu_0=1.716\times10^{-5}\,\text{Pa\,s}$ at $T_0=273.15\,\text{K}$, and Sutherland's constant for air $S=110.4\,\text{K}$.

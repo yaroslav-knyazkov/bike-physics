@@ -1,0 +1,110 @@
+Functional forms and numeric values behind the prescribed forces above.
+
+\subsubsection{Mass, moment of inertia, and center of gravity}
+\label{sec:mass-inertia}
+Each body's mass $m_k$, planar moment of inertia $I_k$ (about $\hat y$, through its own CoG), and CoG location (point $a$, \S\ref{app:notation-points}) are physical inputs, not modeled from a law -- measured (CAD, real life) or otherwise assumed, feeding Weight (\S\ref{sec:2dmodels-forces}) and Rigid body dynamics (\S\ref{sec:rigidbody}). For now $I_k$ and CoG location are kept constant for every body; $m_k$ is constant too, except for the frame+rider system, where it varies (rider mass) -- detailed in \S\ref{sec:frame}.
+
+\subsubsection{Gravity}
+\label{sec:gravity}
+Uniform field, constant magnitude $g$ (standard value $9.81\,\text{m/s}^2$ unless overridden). Real-world $g$ varies with latitude and altitude -- roughly $9.78\,\text{m/s}^2$ at the equator to $9.83\,\text{m/s}^2$ at the poles (sea level), a spread under $0.5\%$ across any cyclable terrain -- small enough that constant $g$ is the default. Where altitude dependence is wanted instead, the inverse-square model
+\begin{equation}
+    g(h) = g_0\left(\frac{r_E}{r_E+h}\right)^2
+\end{equation}
+is available, with $g_0$ the standard surface value, $r_E$ Earth's radius, and $h$ altitude above sea level; latitude still isn't captured by it.
+
+\subsubsection{Aerodynamics}
+\label{sec:aerodynamics-model}
+Drag, side force, and pitching moment, quasi-steady, each a dynamic-pressure-scaled coefficient along the frame's own axes $\hat{x}_1,\hat{z}_1,\hat y$ (\S\ref{sec:2dmodels-forces}):
+\begin{align}
+    A_{k,x} &= q\,C_{k,x}\,A_k, \\
+    A_{k,z} &= q\,C_{k,z}\,A_k, \\
+    A_{k,m} &= q\,C_{k,m}\,A_k\,l_k.
+\end{align}
+
+\textbf{Dynamic pressure.}
+\begin{equation}
+    q = \tfrac{1}{2}\rho\,v_{rel}^2,
+\end{equation}
+with $\rho$ air density (\S\ref{sec:air-density}) and $v_{rel}=|\vv{v}_{rel}|$ the airspeed, defined next.
+
+\textbf{Relative velocity.}
+\begin{equation}
+    \vv{v}_{rel} = \vv{v}_{wind} - \vv{v}_1,
+\end{equation}
+the air's velocity relative to the frame+rider system.
+
+\textbf{Coefficients.} Each is empirical, generally only available as a wind-tunnel or CFD lookup table over its own arguments:
+\begin{equation}
+    C_{k,x},\,C_{k,z},\,C_{k,m} = C(\xi_k,\,\omega_k,\,\beta_{rel},\,Re)
+\end{equation}
+where $\xi_k$ is a geometric/configuration change of the body itself (e.g.\ rider posture for $k=1$; rigid single-piece bodies like the wheels have none), $\omega_k$ the body's own rotation rate (e.g.\ wheel spin), $\beta_{rel}$ the angle of attack, the relative wind's angle to the body (\S\ref{app:notation-kinematics}):
+\begin{equation}
+    \beta_{rel} = \operatorname{atan2}\!\big({}^{z_1}v_{rel},\,{}^{x_1}v_{rel}\big),
+\end{equation}
+and $Re$ Reynolds number:
+\begin{equation}
+    Re = \frac{\rho\,v_{rel}\,l_k}{\mu},
+\end{equation}
+with $\mu$ air's dynamic viscosity and $l_k$ the reference length below.
+
+For simplicity, each coefficient can instead be linearized -- a first-order expansion in these arguments around a reference point:
+\begin{equation}
+    C = C_0 + \frac{\partial C}{\partial \xi_k}\,\xi_k + \frac{\partial C}{\partial \omega_k}\,\omega_k + \frac{\partial C}{\partial \beta_{rel}}\,\beta_{rel} + \frac{\partial C}{\partial Re}\,Re,
+\end{equation}
+written generically for any of $C_{k,x},C_{k,z},C_{k,m}$, each with its own constant $C_0$ and four slopes. The $\beta_{rel}=0$ intercept $C_{k,x,0}$ recovers exactly the lumped $C_dA$ Timeline's Data acquisition calibrates from ordinary ride data.
+
+\textbf{Reference area and length.} $A_k$ is body $k$'s frontal reference area (projected silhouette normal to $\hat x_1$) and $l_k$ a reference length for the moment arm (e.g.\ wheelbase) -- fixed geometric inputs, same status as \S\ref{sec:mass-inertia}'s mass/inertia/CoG: measured (CAD, real life) or otherwise assumed.
+
+\subsubsection{Atmosphere}
+Atmospheric data -- density, temperature, pressure, and humidity -- can be assumed constant, or obtained from a model:
+\begin{itemize}
+    \item \textbf{ISA} (International Standard Atmosphere) -- standard altitude-based model; see Appendix~\ref{app:isa}.
+    \item \textbf{Weather station data} -- a single station, or multiple stations interpolated along the route.
+\end{itemize}
+
+\subsubsubsection{Air density}
+\label{sec:air-density}
+\begin{equation}
+    \rho = \rho(h, RH)
+\end{equation}
+Altitude dependence comes from the ISA model (\S\ref{app:isa}), dry air only, via the ideal-gas relation given there. Real (wet) air density additionally needs relative humidity $RH$ from weather-station data, folded in through the moist-air correction (\S\ref{app:humidity-density}).
+
+\subsubsubsection{Viscosity}
+\label{sec:air-viscosity}
+\begin{equation}
+    \mu = \mu(T)
+\end{equation}
+$\mu$ (\S\ref{sec:aerodynamics-model}'s $Re$) depends primarily on temperature -- rising with it, unlike a liquid's viscosity, which falls; see Sutherland's law (\S\ref{app:sutherland}) for the model.
+
+\subsubsection{Pedal force}
+\label{sec:pedal-force-model}
+Not modeled from a force law either: $\vv{P}_{3b/1,X}$ (\S\ref{sec:2dmodels-forces}) is the rider's control input, free within physical pedaling limits, solved for by Optimization rather than prescribed here (Timeline).
+
+\textbf{Periodic analytical.} Where a closed-form model is wanted instead of a free decision variable, each pedal's magnitude can be modeled as a periodic function of crank angle $\theta_{3b}$, the two pedals offset by half a revolution:
+\begin{equation}
+    P_D(\theta_{3b}) = P_0\cos^2(\theta_{3b}-\phi), \qquad P_F(\theta_{3b}) = P_0\cos^2(\theta_{3b}-\phi+\pi),
+\end{equation}
+squared rather than left as a bare cosine so the magnitude never goes negative, with $P_0$ peak magnitude and $\phi$ the crank angle of peak force. The same squared-for-non-negativity structure extends to more harmonics:
+\begin{equation}
+    P_X(\theta_{3b}) = \left(a_0 + \sum_{n=1}^N a_n\cos(n\theta_{3b}-\phi_n)\right)^2, \qquad X\in\{D,F\},
+\end{equation}
+$F$ offset from $D$ by $\pi$ in $\theta_{3b}$ as above, with coefficients $a_0,\dots,a_N,\phi_1,\dots,\phi_N$ free to fit.
+
+\textbf{Shape-constrained templates.} Real pedaling isn't as symmetric as $\cos^2$ suggests -- tangential force collapses near top and bottom dead center ($\theta_{3b}=0,\pi$) and peaks around $90^\circ$--$110^\circ$ past top dead center. Two analytical templates capture this with a couple of shape parameters, $X=F$ shifted from $X=D$ by $\pi$ in $\theta_{3b}$ as above:
+\begin{align}
+    P_X(\theta_{3b}) &= P_0\,\big[\max(0,\sin(\theta_{3b}-\theta_0))\big]^n, \\
+    P_X(\theta_{3b}) &= P_0\,\exp\!\big(\kappa(\cos(\theta_{3b}-\theta_0)-1)\big).
+\end{align}
+The first is a powered, dead-zone-clipped sine: raising $n$ sharpens the peak and pushes the shoulders to exactly zero over a wider span around dead center, instead of $\cos^2$'s soft, never-quite-zero approach. The second is a von Mises-type circular bump -- the natural ``circular Gaussian'' for angle-indexed data -- where concentration $\kappa$ controls peak sharpness, and it's smooth and non-negative everywhere without a hard clip. Both reduce to something close to $\cos^2$ as the shape parameter relaxes ($n=2$ or $\kappa\to0$). $P_0$ is peak magnitude and $\theta_0$ the crank angle of peak force in both.
+
+\textbf{Biomechanical (legs isolation).} The deepest option: a multi-segment leg model (hip--knee--ankle) with muscle actuators, mapped through the pedal/crank kinematic chain to the resultant pedal force -- predicts the force profile from physiology rather than fitting a shape to it. Deferred to the rider legs-isolation model (\S\ref{sec:frame}'s pending ``rider legs isolated'' assumption).
+
+\textbf{Data-driven.} Skip the functional form entirely and use measured pedal-force or power-meter data directly, per rider, once available (Timeline's Data acquisition) -- either fit it to whichever of the above forms is chosen, or use a normalized torque-curve shape (own data, or from cycling-biomechanics literature) as a fixed template, scaled by rider-specific peak force and cadence.
+
+\subsubsection{Bearing friction}
+\label{sec:bearing-friction-model}
+Only the resisting moment $\vv{Q}_{k/l}$ (\S\ref{sec:2dmodels-forces}) is modeled for now, no bearing friction force. Standard rolling-element bearing friction (Coulomb, load-proportional):
+\begin{equation}
+    |Q_{k/l}| = \tfrac{1}{2}\,\mu_b\,d_{k/l}\,|\vv{R}_{k/l}|,
+\end{equation}
+with $\mu_b$ an empirical bearing-type friction coefficient (e.g.\ $\approx0.0015$ for deep-groove ball bearings), $d_{k/l}$ the bearing bore/shaft diameter at that joint, and $|\vv{R}_{k/l}|$ the reaction force magnitude the bearing carries (\S\ref{sec:2dmodels-forces}).

@@ -1,0 +1,75 @@
+Dimension, force/moment, and point labeling conventions used throughout this document.
+\todo{scan the whole document for consistency with the conventions below -- older sections may predate a rule change here and not yet match it.}
+\todo{scan the whole document, including this appendix, for self-referential or history-narrating sentences (prose that explains how/why something changed rather than just stating the current rule) and remove them.}
+
+\subsection{Forces and moments}
+\label{app:notation-forces}
+This is about the grammar of a force/moment symbol -- how one is built -- not what any particular letter physically means (that's \S\ref{sec:2dmodels-forces}). Every symbol follows one template:
+\begin{equation}
+    {}^{\text{axis}}(\text{type})_{\text{on}/\text{from},\ \text{variant},\ \text{point}}
+\end{equation}
+
+\begin{itemize}
+    \item \textbf{type} -- the force/moment type letter (e.g.\ $R$, $W$, $A$, $Q$, $P$; meanings in \S\ref{sec:2dmodels-forces}). Always required.
+    \item \textbf{on} -- the body the force acts \emph{on}. Always required.
+    \item \textbf{from} -- the body the force acts \emph{from}. Required for a reaction pair (two modeled bodies exchanging force); omitted for a one-way/external load with no modeled ``other body'' -- gravity ($\vv{W}_1$), aerodynamics ($\vv{A}_{1,f}$).
+    \item \textbf{variant} -- distinguishes multiple different forces/moments between the \emph{same} on/from pair, when needed. E.g.\ $\vv{A}_{1,f}$ (force) vs.\ $\vv{A}_{1,m}$ (moment): same interaction, two different physical quantities from it.
+    \item \textbf{point} -- the point of application, when needed to distinguish multiple points for the same on/from/variant. E.g.\ $\vv{P}_{1/3b,D}$ vs.\ $\vv{P}_{1/3b,F}$: same pedal-force interaction, two different pedal positions.
+    \item \textbf{axis} -- a leading superscript, not a subscript, used only when taking a scalar component of the vector along a stated axis, e.g.\ ${}^{x_0}R_{2a/0}$ for the tangential component of the rear ground reaction in the ground-local frame. It gets its own superscript slot precisely so it never collides with variant or point.
+\end{itemize}
+
+Newton's third law reads directly off an on/from pair: $\vv{R}_{k/l} = -\vv{R}_{l/k}$.
+
+One documented exception, kept for readability rather than forced through the template: $M$ (the moment-balance equation, $\sum\vv{M}_i(X)$) isn't a physical force at all -- it takes the reference point as a function argument rather than fitting the on/from pattern.
+
+\subsection{Displacement, velocity, acceleration}
+\label{app:notation-kinematics}
+Same grammar as forces and moments (\S\ref{app:notation-forces}), since a velocity needs the same three pieces of information as a reaction force: which body's point is moving, what it's measured relative to, and which point:
+\begin{equation}
+    {}^{\text{axis}}(\text{type})_{\text{on}/\text{from},\ \text{point}}
+\end{equation}
+\begin{itemize}
+    \item \textbf{type} -- $x$ (displacement/position), $v$ (velocity), $a$ (acceleration); $\theta,\omega,\alpha$ for the angular counterparts (no on/from/point -- a body's own rotation isn't attached to a point).
+    \item \textbf{on} -- the body whose point's motion is described. Always required.
+    \item \textbf{from} -- the body the motion is measured relative to. Omitted when relative to the fixed frame $i$ (the default, exactly like a force's omitted \textbf{from} for a one-way/external load); included for relative motion between two modeled bodies.
+    \item \textbf{point} -- omitted when the point is the body's own CoG, the default state point, e.g.\ $\vv{v}_i$ (\S\ref{sec:rigidbody}); included otherwise, e.g.\ $\vv{v}_{2a,A}$ for the velocity of axle point $A$ on wheel 2a.
+    \item \textbf{axis} -- same leading-superscript scalar-component convention as forces, e.g.\ ${}^{x_0}v_{2a,A}$.
+\end{itemize}
+One exception, kept for readability: $v_{slip}$ (\S\ref{sec:wheels-ground}) is really ${}^{x_0}v_{2a,b_{2a}}$ under the full template.
+
+\subsection{Dimensions}
+Every dimension symbol follows:
+\begin{equation}
+    (\text{quantity})_{\text{body},\ \text{descriptor}}
+\end{equation}
+\begin{itemize}
+    \item \textbf{quantity} -- the letter, reserved by physical meaning, not by system (table below). Always required.
+    \item \textbf{body} -- which instance the value belongs to. Always required, even when two instances happen to share a value -- e.g.\ both wheels are assumed to share one radius, but it's still written $r_{2a}$, $r_{2b}$ (with $r_{2a}=r_{2b}=r$ stated separately as the assumption), not bare $r$ in an equation. Unlike points below, a dimension's body is never omitted, since there's no home-context prose paragraph to carry that information the way a point's local section does.
+    \item \textbf{descriptor} -- a point letter or a name, added only when needed to tell apart multiple same-letter quantities on the same body, e.g.\ $r_{1,pedal}$ vs.\ $r_{2a,a}$, or $l_{2a,rr}$. Omitted when a body has only one quantity of that letter, e.g.\ $r_{2a}$ (wheel radius, nothing else on that body is called $r$).
+\end{itemize}
+
+The quantity letter is reserved by physical meaning, not by system, so the same letter always means the same kind of thing everywhere in the document:
+\begin{center}
+\begin{tabular}{c l l}
+    Symbol & Meaning & Example \\
+    \hline
+    $l$ & body-frame in-plane (x-axis) offset & $l_{1,C}$, $l_{2a,rr}$ \\
+    $h$ & body-frame vertical (z-axis) offset & $h_{1,C}$ \\
+    $r$ & fixed radius, intrinsic to one body (rotation-axis distance) & $r_{2a}$, $r_{1,pedal}$, $r_{2a,a}$ \\
+    $d$ & generic point-to-point distance, not axis-aligned (reserved, unused yet) & -- \\
+    $\rho$ & radius of curvature of a path (extrinsic, varies with position) & $\rho(s)$
+\end{tabular}
+\end{center}
+
+\subsection{Points}
+\label{app:notation-points}
+Simplest of the four grammars -- a point is just a letter, optionally tagged with the body it belongs to:
+\begin{equation}
+    (\text{letter})_{\text{body}}
+\end{equation}
+\begin{itemize}
+    \item \textbf{letter} -- the point label itself. Its meaning is local to the system/file that defines it (home context) -- the same letter can mean a different point in a different system, same as a dimension's quantity-letter does \emph{not} work (dimensions are reserved globally; points are not). Always required.
+    \item \textbf{body} -- unlike a dimension, \emph{omitted} within home context (the enclosing section already disambiguates which point is meant); attached as a subscript only when the point crosses into Assembly or a cross-system equation, e.g.\ $A_1$ for frame point $A$, $A_{2a}$ for wheel 2a's own axle point. No superscript (no $A^{(1)}$) -- the same mechanism already used for a position vector of a point, e.g.\ $\vv{x}_{1,A}$ (\S\ref{app:notation-kinematics}).
+\end{itemize}
+
+Case carries meaning: uppercase ($A$, $B$, \dots) marks a repeatable point -- one that can be reused across bodies when it genuinely coincides with another (the axle joints, \S\ref{sec:frame-wheels}). Lowercase marks a point intrinsic to one body, never repeated -- e.g.\ $a$ is reserved for the point where weight acts (CoG).

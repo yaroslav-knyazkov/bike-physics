@@ -1,0 +1,20 @@
+\begin{aiblock}
+Model refinements worth doing at some point, not yet prioritized against the 2D build order in the Timeline. Pull an item into that ordered list when it becomes the next thing to build.
+\begin{itemize}
+    \item \textbf{Frame equivalent stiffness} -- frame as a rigid body plus an equivalent spring-damper rather than perfectly rigid; matters most for standing/sprint efforts.
+    \item \textbf{Rim/wheel stiffness} -- separate from tire stiffness.
+    \item \textbf{Chain and drivetrain compliance} -- a real chain isn't infinitely stiff under load.
+    \item \textbf{Dedicated brake subsystem} -- pad/rotor friction, hydraulic line compliance; currently braking has no system of its own.
+    \item \textbf{Proper bearing-friction law} -- the base Coulomb/load-proportional magnitude is modeled (\S\ref{sec:bearing-friction-model}); a viscous, speed-dependent correction on top of it is not yet.
+    \item \textbf{Pedal force bounds} -- what limits $\vv{P}_{3b/1,X}$ physically (max force, cadence-dependent power ceiling, left/right coupling through the crank)? none stated yet; see \S\ref{sec:pedal-force-model}.
+    \item \textbf{Pedal force model selection} -- several candidate tiers are laid out (\S\ref{sec:pedal-force-model}) but which to actually use needs research/comparison against real pedal-force data before committing.
+    \item \textbf{Weather-driven mass changes} -- soaked clothing, mud, water absorbed by bags/frame can meaningfully add mass; not accounted for. See \S\ref{sec:mass-inertia}.
+    \item \textbf{Non-rigid rider mass properties} -- $I_k$ and CoG location are treated as constant, but a non-rigid rider (standing, leaning, shifting weight) would actually shift both; ties to the ``rider is rigidly attached'' assumption in \S\ref{sec:frame}. See \S\ref{sec:mass-inertia}.
+    \item \textbf{Aerodynamic configuration argument $\xi_k$} -- needs better geometrical arguments than a single placeholder, most likely one or more angles (e.g.\ torso lean); needs research into what a rider-posture aero model actually conditions on. See \S\ref{sec:aerodynamics-model}.
+    \item \textbf{Raindrop impact} -- a small, separate resistive effect distinct from drag through air; not modeled, worth investigating even though expected to be minor. See \S\ref{sec:aerodynamics-model}.
+    \item \textbf{Combined-slip tire model} -- longitudinal + lateral, once turning enters 2D/3D.
+    \item \textbf{Steering/trail geometry \& wheel gyroscopic effects} -- relevant once the front fork gets its own DOF, per the Timeline's 2D build order (suspension).
+    \item \textbf{Road parametrization for BMX/MTB} -- does the graph form $z(x)$ used in \S\ref{sec:wheels-ground} ever actually need to fall back to a general arc-length curve $\vv{OP}(s)$? During flight there's no contact to parametrize anyway, and landing only needs $z$ at the current CoM $x$, so ordinary jumps may not require it -- true overhangs/loops (halfpipe walls) would. Unsettled; not blocking anything yet.
+    \item \textbf{Contact well-posedness under high curvature} -- the single-point contact/rolling model in \S\ref{sec:wheels-ground} implicitly assumes the road's local radius of curvature stays large relative to wheel radius $r^{(2a)}$ (via $\rho(x) = (1+z'(x)^2)^{3/2}/|z''(x)|$ at the contact reference $x^*$). What tight curvature actually threatens is the \emph{geometry} -- a unique tangent point $x^*$, a well-defined frame $0$, no bridging over a dip or wedging into a crest narrower than the wheel -- not the point-force representation itself, since any pressure distribution reduces exactly to a resultant force regardless of curvature. Not yet enforced or handled as a distinct case.
+\end{itemize}
+\end{aiblock}

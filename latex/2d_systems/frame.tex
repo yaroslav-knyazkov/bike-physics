@@ -1,0 +1,55 @@
+\subsection{Frame + Rider}
+\label{sec:frame}
+Single instance -- no rear/front split like Wheel or Drivetrain, so the subsystem-instance heading level is skipped here and this goes straight to the content categories.
+\subsubsubsection{Assumptions}
+\begin{itemize}
+    \item Rider is rigidly attached to the frame; lumped as one rigid body (no relative rider motion, e.g. standing or leaning, modeled yet). \emph{Pending: rider legs isolated, rider fully isolated.}
+    \item CoG location ($l_{1,a},h_{1,a}$) and points $B$, $C$ are fixed in the frame's body frame ($\hat x_1,\hat z_1$): no suspension travel, rigid fork and rear triangle. \emph{Pending: suspension (front fork and rear).}
+    \item Pedaling force is applied at fixed radius $r_{1,pedal}$ about $C$ at the crank's current orientation $\hat x_{2b}$ -- an instantaneous snapshot, not yet coupled to crank rotation dynamics. \emph{Pending: complex drivetrain.}
+\end{itemize}
+
+\subsubsubsection{Force}
+The equation of motion for this system is given by
+\begin{equation}
+    \sum \vv{F}_1 = \vv{W}_1 + \vv{A}_{1,f} + \vv{R}_{1/2a} + \vv{R}_{1/2b} + \vv{R}_{1/3b} + \vv{P}_{1/3b, D} + \vv{P}_{1/3b, F},
+\end{equation}
+where respectively the forces acting on the system are weight, aerodynamic force, wheel reactions and drivetrain reactions (including bearing and pedaling force).
+
+\subsubsubsection{Geometry}
+The geometry will be derived with respect to point $A$ at center of rear axle, where aerodynamics and rear wheel reaction forces act.
+
+Weight acts at point $a$ center of gravity (CoG)
+\begin{equation}
+    \vv{Aa} = l_{1,a}\hat{x}_1 + h_{1,a}\hat{z}_1.
+\end{equation}
+
+Front wheel reaction acts at $B$
+\begin{equation}
+    \vv{AB} = l_{1,B}\hat{x}_1.
+\end{equation}
+
+The drivetrain bearing reaction acts at $C$
+\begin{equation}
+    \vv{AC} = l_{1,C}\hat{x}_1 + h_{1,C}\hat{z}_1,
+\end{equation}
+while pedaling forces act radially around $C$ in $F$ and $B$, giving
+\begin{align}
+    \vv{AD} &= \vv{AC} + \vv{CD} = l_{1,C}\hat{x}_1 + h_{1,C}\hat{z}_1 + r_{1,pedal} \hat{x}_{2b}, \\
+    \vv{AF} &= \vv{AC} + \vv{CF} = l_{1,C}\hat{x}_1 + h_{1,C}\hat{z}_1 - r_{1,pedal} \hat{x}_{2b}.
+\end{align}
+
+\subsubsubsection{Moment}
+Rotation equation of motion are given as
+\begin{align}
+    \sum \vv{M}_1(A) &= \vv{Aa} \times \vv{W}_1 + \vv{A}_{1,m} + \vv{AB} \times \vv{R}_{1/2b} + \vv{AC} \times \vv{R}_{1/3b} + \vv{AD} \times \vv{P}_{1/3b, D} + \vv{AF} \times \vv{P}_{1/3b, F}, \\
+    &+ \vv{Q}_{1/2a} + \vv{Q}_{1/2b} + \vv{Q}_{1/3b},
+\end{align}
+where $\vv{A}_{1,m}$ is aerodynamic pitching moment and $Q$ are friction moments at bearings.
+
+
+\subsubsubsection{Equations of motion}
+\begin{align}
+    \sum\vv{F}_1 &= m_1\vv{a}_1, \\
+    \sum\vv{M}_1(A) &= I_1\alpha_1\,\hat y + \vv{Aa}\times m_1\vv{a}_1.
+\end{align}
+

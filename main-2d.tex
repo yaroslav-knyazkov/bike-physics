@@ -1,0 +1,63 @@
+\documentclass[10pt]{extarticle}
+
+\usepackage{fancyhdr, geometry, hyperref, xcolor, amsmath, amsfonts, subcaption, graphicx, tikz, nomencl, bm}
+\usetikzlibrary{shapes.geometric}
+\usetikzlibrary{arrows.meta,arrows}
+\usepackage[export]{adjustbox}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{pdflscape}
+
+\geometry {
+    a4paper,
+    total={170mm,257mm},
+    left=20mm,
+    top=20mm,
+}
+
+\pagestyle{fancy}
+\pagenumbering{arabic}
+\fancyhead[L]{}
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage}
+
+\hypersetup{
+    colorlinks,
+    linkcolor={blue!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+
+\begin{document}
+\section{Frame}
+\subsection{Forces and moments}
+\subsection{Geometry}
+\subsection{Equations of motion}
+\begin{equation}
+    m_1\vec{\ddot{x}}_1 = \sum \vec{F}_1 = \vec{W}_1 + \vec{A}_{1f} + \vec{R}_{1/2} + \vec{R}_{1/3} + \vec{R}_{1/4b} + \vec{P}_{1/4bD} + \vec{P}_{1/4bF}
+\end{equation}
+\begin{equation}
+    ... = \sum \vec{M}_1(A) = \vec{Aa_1}\times \vec{W}_1 + \vec{A}_{1m} + \vec{AB}\times \vec{R}_{1/3} + \vec{AC}\times \vec{R}_{1/4b} + \vec{AD}\times \vec{P}_{1/4bD} + \vec{AF}\times \vec{P}_{1/4bF}
+\end{equation}
+
+\section{Wheels}
+\subsection{Forces and moments}
+\subsection{Geometry}
+\subsection{Equations of motion (2)}
+\begin{equation}
+    m_2\vec{\ddot{x}}_2 = \sum \vec{F}_2 = \vec{W}_2 + \vec{A}_{2f} + \vec{R}_{2/1}+ \vec{R}_{2/0} + \vec{R}_{2/4af}
+\end{equation}
+\begin{equation}
+    ... = \sum \vec{M}_2(A) =  \vec{Aa_2}\times \vec{W}_2 + \vec{A}_{2m} + \vec{Ab_2}\times \vec{R}_{2/0} + \vec{R}_{2/4am}
+\end{equation}
+
+\subsection{Equations of motion (3)}
+\begin{equation}
+    m_3\vec{\ddot{x}}_3 = \sum \vec{F}_3 = \vec{W}_3 + \vec{A}_{3f} + \vec{R}_{3/1} + \vec{R}_{3/0}
+\end{equation}
+\begin{equation}
+    ... = \sum \vec{M}_3(B) =  \vec{Ba_3}\times \vec{W}_3 + \vec{A}_{3m} + \vec{Bb_3}\times \vec{R}_{3/0}
+\end{equation}
+
+\section{Drivetrain}
+\end{document}

@@ -1,0 +1,77 @@
+\subsection{Wheel}
+\label{sec:wheel}
+
+Common assumptions (both instances):
+\begin{itemize}
+    \item Circular, axisymmetric rigid disk of constant radius $r$, assumed equal both instances ($r_{2a}=r_{2b}=r$): no tire deformation, no out-of-round effects. \emph{Pending: tire stiffness, rim/wheel stiffness.}
+    \item CoG offset from the hub, $r_a$ ($r_{2a,a}$, $r_{2b,a}$), is kept general to allow imbalance between the two wheels.
+    \item Ground contact idealized as a single point, valid while the local road radius of curvature is much larger than $r$ -- see Assembly. \emph{Pending: tire stiffness (a deformable tire has a finite contact patch, not a point).}
+\end{itemize}
+
+\subsubsection{Rear (2a)}
+Carries the drivetrain (cassette) reaction at the hub.
+
+\subsubsubsection{Force}
+The equation of motion for this system is given by
+\begin{equation}
+    \sum \vv{F}_{2a} = \vv{W}_{2a} + \vv{A}_{2a,f} + \vv{R}_{2a/0} + \vv{R}_{2a/1} + \vv{R}_{2a/3a, f},
+\end{equation}
+where respectively the forces acting on the system are weight, aerodynamic force, ground reaction, frame reaction and drivetrain reaction.
+
+\subsubsubsection{Geometry}
+The geometry will be derived with respect to point $A$ at center of axle, where aerodynamics, frame reaction and drivetrain reaction force act at.
+
+Weight acts at point $a$ center of gravity (CoG)
+\begin{equation}
+    \vv{Aa} = r_{2a,a}\hat{x}_{2a}
+\end{equation}
+
+Ground reaction acts at $b$,
+\begin{equation}
+    \vv{Ab} = l_{2a,rr}\,\sigma\,\hat x_0(x^*) - r_{2a}\,\hat z_0(x^*).
+\end{equation}
+
+\subsubsubsection{Moment}
+Rotation equation of motion are given as
+\begin{align}
+    \sum \vv{M}_{2a}(A) &= \vv{Aa} \times \vv{W}_{2a} + \vv{A}_{2a,m} + \vv{Ab} \times \vv{R}_{2a/0} + \vv{R}_{2a/3a, m} + \vv{Q}_{2a/1},
+\end{align}
+where $\vv{R}_{2a/3a, m}$ is drivetrain fixed reaction force.
+
+\subsubsubsection{Equations of motion}
+\begin{align}
+    \sum\vv{F}_{2a} &= m_{2a}\vv{a}_{2a}, \\
+    \sum\vv{M}_{2a}(A) &= I_{2a}\alpha_{2a}\,\hat y + \vv{Aa}\times m_{2a}\vv{a}_{2a}.
+\end{align}
+
+\subsubsection{Front (2b)}
+No drivetrain reaction at the hub (no cassette on the front wheel); otherwise identical to Rear (2a).
+
+\subsubsubsection{Force}
+\begin{equation}
+    \sum \vv{F}_{2b} = \vv{W}_{2b} + \vv{A}_{2b,f} + \vv{R}_{2b/0} + \vv{R}_{2b/1},
+\end{equation}
+i.e. the Rear (2a) force equation with the drivetrain-reaction term $\vv{R}_{2a/3a,f}$ dropped.
+
+\subsubsubsection{Geometry}
+Identical in form to Rear (2a) with $2a\to2b$, \textbf{$A\to B$}.
+\begin{equation}
+    \vv{Ba} = r_{2b,a}\hat{x}_{2b},
+\end{equation}
+and ground reaction acting at $b$,
+\begin{equation}
+    \vv{Bb} = l_{2b,rr}\,\sigma\,\hat x_0(x^*) - r_{2b}\,\hat z_0(x^*).
+\end{equation}
+
+\subsubsubsection{Moment}
+Taken about $B$ (this wheel's own axle point, not $A$):
+\begin{equation}
+    \sum \vv{M}_{2b}(B) = \vv{Ba} \times \vv{W}_{2b} + \vv{A}_{2b,m} + \vv{Bb} \times \vv{R}_{2b/0} + \vv{Q}_{2b/1},
+\end{equation}
+i.e. the Rear (2a) moment equation with the drivetrain fixed-reaction term $\vv{R}_{2a/3a,m}$ dropped.
+
+\subsubsubsection{Equations of motion}
+\begin{align}
+    \sum\vv{F}_{2b} &= m_{2b}\vv{a}_{2b}, \\
+    \sum\vv{M}_{2b}(B) &= I_{2b}\alpha_{2b}\,\hat y + \vv{Ba}\times m_{2b}\vv{a}_{2b}.
+\end{align}
