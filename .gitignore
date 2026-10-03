@@ -1,6 +1,12 @@
 # Python
 __pycache__/
 *.pyc
+.venv/
+*.egg-info/
+
+# Run artifacts (architecture.md S3, S5.6)
+runs/
+*.npz
 
 # LaTeX build artifacts
 *.aux

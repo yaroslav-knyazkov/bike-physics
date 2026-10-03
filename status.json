@@ -1,0 +1,47 @@
+{
+  "project": "bike-physics",
+  "type": "solo research/engineering project (not a multi-stakeholder product)",
+  "active_modules": ["architect", "developer", "qa", "documentation"],
+  "modules_skipped": {
+    "vision": "existing latex/ derivation already serves as the requirements/vision document",
+    "product-manager": "no discovery needed; scope was given directly by the user and confirmed via architecture decision gates",
+    "product": "no user stories needed; acceptance criteria are physics correctness tests defined per ticket in task.md",
+    "frontend-developer": "no UI beyond CLI + matplotlib plots/animation",
+    "security": "local scientific CLI tool, no network/auth/secrets surface; revisit if that changes"
+  },
+  "complexity": "complex",
+  "pipeline": "architect (done) -> developer, ticket by ticket per task.md -> qa (spot-checks + physics regression tests) -> documentation (README/docs pass near the end)",
+  "stage": "implementation",
+  "current_ticket": "T1",
+  "artifacts": {
+    "architecture": "architecture.md",
+    "tasks": "task.md",
+    "existing_code_superseded": ["bikephysics/parameters.py", "bikephysics/profiles.py", "bikephysics/simulation.py", "bikephysics/analysis.py", "main.py", "requirements.txt"],
+    "existing_code_migrated": ["bikephysics/plotting.py -> src/bikephysics/simplified/plots.py"]
+  },
+  "decisions_log": [
+    {"id": "D-1", "question": "Repo topology", "decision": "Monorepo, single `bikephysics` package, src/ layout", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-2", "question": "Fate of existing bikephysics/ and main.py", "decision": "In-place rewrite; only plotting.py survives", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-3", "question": "Env/packaging tooling", "decision": "uv + pyproject.toml + committed uv.lock", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-4", "question": "Config/parameter modeling", "decision": "pydantic v2 frozen models", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-5", "question": "Config file format", "decision": "TOML for input, JSON for machine-written artifacts", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-6", "question": "CLI framework", "decision": "Typer", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-7", "question": "CLI topology", "decision": "One `bike` entry point with subcommand groups (simplified/planar/opt/spec/validate)", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-8", "question": "2D dynamics formulation", "decision": "Maximal coordinates + Lagrange-multiplier constraints", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-9", "question": "Ground contact / integration strategy", "decision": "Regularized/penalty contact + stiff integrator (Radau) as default now; event-driven exact mode switching added later (T11) as a fidelity reference only", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-10", "question": "Lumped 2D drivetrain model (new physics)", "decision": "Option B: crankset as a real rigid body + one scalar chain-tension constraint (multiplier = chain tension); freewheel as a proper unilateral mode switch; PedalInput protocol with clipped-sine default", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-11", "question": "Optimization first-milestone approach", "decision": "Control parametrization + scipy for milestone 1 (T8); CasADi direct collocation for milestone 2 (T9)", "approved_by": "user (bundled into tech-stack approval)", "date": "2026-10-04"},
+    {"id": "D-12", "question": "Autodiff/NLP stack for optimization milestone 2+", "decision": "CasADi as an optional extra (`uv sync --extra opt`); core apps never require it", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-13", "question": "Sign-convention handling between tiers (z-down in Simplified vs z-up in 2D)", "decision": "Code: one named sign flip at the Simplified module's public boundary, each tier implemented in its own document's convention. LaTeX: left as-is, not re-signed.", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-14", "question": "Results persistence format", "decision": "result.npz + summary.json; revisit Parquet/HDF5 later if needed", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-15", "question": "Test/lint/type tooling", "decision": "pytest + ruff + mypy", "approved_by": "user", "date": "2026-10-04"},
+    {"id": "D-16", "question": "Visualization scope", "decision": "matplotlib static figures + matplotlib.animation 2D replay", "approved_by": "user", "date": "2026-10-04"}
+  ],
+  "spec_findings_pending_user_review": [
+    "latex/2d_systems/frame.tex: pedal points AD/AF use x_hat_2b where x_hat_3b (crankset's own axis) looks intended -- code will implement with x_hat_3b.",
+    "latex/main.tex: \\subsection{Drivetrain} under 2D-Systems is an empty placeholder (expected -- being filled by code per D-10; ticket T12 ports the model back into latex/2d_systems/drivetrain.tex for review).",
+    "latex/2d_systems/overview.tex lists Drivetrain sub-systems as Cassette/Crankset as if both modeled today; wheel.tex folds cassette into 2a. Reads inconsistent unless 3a is understood as deferred.",
+    "Minor typo: 'Casette' -> 'Cassette' in overview.tex.",
+    "latex/appendix/notation.tex still carries two open \\todo{} markers, unrelated to this work."
+  ]
+}

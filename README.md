@@ -1,54 +1,75 @@
 # bike-physics
 
-A small single-DOF longitudinal bike dynamics simulation. The physics is
-derived in `main.tex` (equations of motion and kinematics for a bike+rider
-system with wheel and drivetrain rotational inertia, rolling resistance,
-gravity on an incline, and quadratic aerodynamic drag). The rider is
-modeled as a prescribed propulsive force F(t) [N] applied at the contact
-point (not a power source), which avoids any 1/v singularity and lets the
-bike start cleanly from rest.
+Bike longitudinal and planar dynamics: simulation, analysis, and trajectory optimization. The physics
+is derived in `latex/` (see `latex/main.tex` for the full 2D multibody derivation and
+`latex/simplified/forward_motion.tex` for the single-DOF reduction); the implementation plan and
+design rationale live in `architecture.md` and `task.md`.
 
-## Running it
+This package is being built as three applications sharing one `core`:
+
+1. **Simplified** -- the single-DOF longitudinal model: fast rollouts, closed-form steady-state checks,
+   sensitivity/elasticity analysis.
+2. **Planar (2D)** -- the full rigid-multibody model (frame + two wheels + crankset + chain), with
+   regularized ground contact and a stiff integrator.
+3. **Optimization** -- control/trajectory optimization (min-time, max-distance, min-energy) built on
+   top of whichever tier's `ForwardModel` adapter is cheapest for the question being asked.
+
+All three are reachable through one console script, `bike`, with five subcommand groups:
+`simplified`, `planar`, `opt`, `spec`, `validate`.
+
+## Status
+
+As of ticket **T1** (this commit), only the repository scaffolding and the shared `core` skeleton
+exist: `core/units.py`, `core/mathx.py`, `core/results.py`, `core/runio.py`, `core/plotting.py`, and
+the `bike` CLI's five *empty* subcommand groups. **None of the quickstart commands below work yet** --
+they are the target shape of each app once its tickets land (Simplified: T2-T4; Planar: T2, T5-T7;
+Optimization: T2, T4, T8-T10). Until then, `bike --help` and `bike <group> --help` are the only
+commands that do anything.
+
+## Install
+
+This project uses [`uv`](https://docs.astral.sh/uv/) for environment and dependency management.
 
 ```bash
-pip install -r requirements.txt
-python main.py
+uv sync            # core apps: numpy, scipy, matplotlib, pydantic, typer, tomli-w
+uv sync --extra opt  # also installs casadi, for the T9+ optimization milestone
+uv run bike --help
 ```
 
-`main.py` is a playground, not a CLI: it defines a handful of small,
-independently runnable example functions (`baseline_run`,
-`steady_state_check`, `compare_rolling_resistance`,
-`compare_force_profiles`) that print labeled numeric results to stdout and
-save PNG plots to the project root. Read them, copy them, and adapt them
-to explore your own "what if I change X" questions -- that's the intended
-workflow. For example, deriving a modified parameter set with
-`dataclasses.replace(BikeParameters(), c_rr=0.010)` and re-running
-`steady_state_velocity(...)` is the fastest way to test a "what if"
-without touching the ODE integration at all.
+## Quickstart (target shape -- see "Status" above)
 
-## Package organization
+```bash
+# Simplified: roll out a 120 s run on the road-bike preset and a 5% grade.
+uv run bike simplified run --config road_bike --road grade_5pct --pedal von-mises --t-end 120
 
-- `bikephysics/parameters.py` -- `BikeParameters`, a frozen dataclass of
-  the physical constants (mass, wheel/drivetrain inertia, rolling
-  resistance, aerodynamics, incline, gravity), plus the computed `m_eq`
-  (equivalent mass) property.
-- `bikephysics/profiles.py` -- rider drive-force time profiles
-  (`ConstantForce`, `RampForce`, `StepForce`, `SinusoidalForce`), each a
-  simple `__call__(t) -> F` callable that can be dropped straight into the
-  simulator.
-- `bikephysics/simulation.py` -- `BikeSimulator` (integrates the ODE with
-  `scipy.integrate.solve_ivp` and reconstructs acceleration and the wheel /
-  drivetrain rotation angles) and `SimulationResult` (the output bundle:
-  time series plus the params/force profile that produced them).
-- `bikephysics/analysis.py` -- `steady_state_velocity`, the closed-form
-  analytic steady-state speed for a constant drive force, useful as a
-  sanity check against the simulated terminal speed and for quick
-  parameter-sweep experiments without running a full simulation.
-- `bikephysics/plotting.py` -- `BikePlotter`, producing the standard
-  6-panel time-series figure (`plot`) and multi-run v(t) overlays
-  (`compare`) for side-by-side comparisons.
+# Planar: roll out the full 2D model on a rolling-sine road with regularized contact.
+uv run bike planar run --config road_bike --road rolling_sine --contact regularized --t-end 30
 
-All public names are re-exported from `bikephysics/__init__.py`, so
-`main.py` and any other caller can do
-`from bikephysics import BikeParameters, BikeSimulator, ...` without
-reaching into submodules.
+# Optimization: solve a minimum-time 1 km sprint against the Simplified tier.
+uv run bike opt solve --problem min_time_1km --solver scipy-local
+```
+
+Every run writes its resolved config, full solver/regularization provenance, and output arrays to
+`runs/<UTC-timestamp>-<slug>/` (`summary.json` + `result.npz`); see `architecture.md` S5.6/S12.2.
+
+## Where things live
+
+- `architecture.md` -- the full design: chosen stack, repository layout, module-by-module design,
+  CLI surface, decision log, non-functional decisions.
+- `task.md` -- the ordered implementation tickets this codebase is being built against.
+- `latex/` -- the physics derivation (unchanged by the Python rewrite).
+- `src/bikephysics/core/` -- shared, tier-agnostic code (units, backend-neutral math, parameter
+  model, results schema, run I/O, plotting). Depends on nothing else in this package.
+- `src/bikephysics/simplified/`, `src/bikephysics/planar/`, `src/bikephysics/optim/` -- the three
+  tiers, each depending only on `core` (and, for `optim`, the other two tiers through an adapter).
+- `src/bikephysics/cli/` -- the `bike` command-line app.
+- `tests/` -- unit, analytic, cross-tier, and CLI tests.
+
+## Development
+
+```bash
+uv sync
+uv run pytest
+uv run ruff check .
+uv run mypy
+```

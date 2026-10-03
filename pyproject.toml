@@ -1,0 +1,74 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bikephysics"
+version = "0.1.0"
+description = "Longitudinal and planar bike dynamics: simulation, analysis, and trajectory optimization."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "numpy>=2.0",
+    "scipy>=1.18",
+    "matplotlib>=3.9",
+    "pydantic>=2.9",
+    "typer>=0.15",
+    "tomli-w>=1.0",
+]
+
+[project.optional-dependencies]
+# CasADi collocation (T9+); core apps never require it (architecture.md D-12).
+opt = ["casadi>=3.6"]
+
+[project.scripts]
+bike = "bikephysics.cli.app:main"
+
+[dependency-groups]
+dev = ["pytest>=8.0", "ruff>=0.8", "mypy>=1.13"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bikephysics"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "TID"]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["bikephysics"]
+
+# Dependency rule (architecture.md S4): core imports nothing from
+# simplified/planar/optim/cli; simplified and planar import only core,
+# never each other; validation/cross_tier.py is the one sanctioned
+# cross-tier import and optim/cli are exempted below since they are
+# allowed (optim/cli) or need both tiers by design (validation).
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"bikephysics.simplified" = { msg = "architecture.md S4: only cli, optim, and validation/cross_tier.py may import a tier module; core/simplified/planar must not." }
+"bikephysics.planar" = { msg = "architecture.md S4: only cli, optim, and validation/cross_tier.py may import a tier module; core/simplified/planar must not." }
+"bikephysics.optim" = { msg = "architecture.md S4: core/simplified/planar must not import optim." }
+"bikephysics.cli" = { msg = "architecture.md S4: cli is imported by nothing." }
+
+[tool.ruff.lint.per-file-ignores]
+"src/bikephysics/cli/*" = ["TID251"]
+"src/bikephysics/optim/**" = ["TID251"]
+"src/bikephysics/validation/*" = ["TID251"]
+"tests/**" = ["TID251"]
+"examples/**" = ["TID251"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+files = ["src/bikephysics", "tests"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+disallow_untyped_defs = true
