@@ -80,3 +80,55 @@ beyond the architecture doc's existing claim, since this ticket does not install
   workaround or source build is needed for this machine.
 - No API in `architecture.md` was found to disagree with the installed/resolvable versions above; no
   revisions to S2/S7.7/S8/S9 are needed as a result of this pass.
+
+## (e) T6 -- `RegularizedContact` (7.12): two corrections flagged for architect sign-off
+
+Both are implemented (corrected) in `planar/contact/regularized.py`, with the full derivation in that
+file's module docstring; summarized here for T7/T10's benefit and as the explicit architect flag the
+T6 ticket asked for.
+
+1. **Sign.** Architecture.md S7.6.2 writes `R_z = max(0, k_N*delta^e*(1 + 1.5*c_HC*g_N_dot))`. Taken
+   literally, this linearizes (about the static equilibrium `delta_target`) to a characteristic equation
+   with a *negative* damping coefficient (one stable, one unstable root) -- not the decaying oscillation
+   the ticket's own acceptance test requires. The standard Hunt-Crossley form uses the *penetration* rate
+   (positive while compressing), not the *gap* rate; since `delta_dot = -g_N_dot` while touching, the
+   correct sign is `(1 - 1.5*c_HC*g_N_dot)`. Implemented with the minus sign; confirmed by
+   `tests/analytic/test_contact_regularized.py::test_dropped_wheel_settles_to_delta_target_with_damped_decay`.
+2. **`c_HC` scaling.** `c_HC = c_N/k_N` (as literally written) makes the Hunt-Crossley damping *coefficient*
+   at the operating point `delta ~= delta_target` equal to `1.5*zeta_N*delta_target` -- with `delta_target`
+   a small SI length (1-3 mm), this is `zeta_N` scaled down by ~1e-3, i.e. negligible: a system with
+   `zeta_N` in the documented 0.7-1.0 range shows no visible decay within 5 s of simulated time if `c_HC`
+   is left as `c_N/k_N`. Rescaling to `c_HC = c_N / (1.5 * k_N * delta_target)` makes the *effective*
+   damping ratio at `delta == delta_target` equal exactly `zeta_N`, which is the only reading under which
+   `zeta_N` means what `core.params.ContactParams`'s own docstring says it means. Implemented with this
+   rescaling.
+
+**Regularization parameters that worked** (`tests/analytic/test_contact_regularized.py`, recorded here
+per architecture.md S12.2 / the T6 ticket's own instruction, for T7/T10 to reuse rather than re-tune):
+
+| Parameter | Value used | Notes |
+|---|---|---|
+| `delta_target` | 0.001 m (1 mm) | lower end of the documented 1-3 mm range |
+| `zeta_N` | 0.3 for the decay-shape test (visibly underdamped); 0.7 works equally well for settling-time-only checks | S7.6.2's documented range is 0.7-1.0; 0.3 was chosen *for the test* specifically to make the decaying-oscillation signature visually/numerically unambiguous (more peaks before settling) |
+| `v_eps` | 0.001 m/s | smaller than S7.6.2's example (1e-3 m/s, matches) |
+| `v_stribeck` | 0.01 m/s | matches S7.6.2's example |
+| `mu_s` / `mu_k` | scenario-dependent (0.5-0.9 / 0.6-0.8) | always `mu_k <= mu_s`, per `ContactParams`'s own validator |
+
+**Wall-clock times measured** (this machine, Python 3.12.10, scipy 1.18.1, `method="Radau"`):
+- 60 s single-wheel rolling run, 2000 output points: **0.23 s** (ticket's "Done when" bound: < 2 s).
+- 0.6 s single-wheel drop-and-settle run, 3000 output points, `rtol=1e-9`/`atol=1e-12`: ~1 s.
+
+**A third, non-architecture-text finding, for test design only (not a code defect):** the naive
+"slides above `atan(mu_s)`" grade threshold from `wheels_ground.tex`'s informal phrasing is the
+*sliding-block* threshold, not the *rolling-wheel* one. A wheel with rotational inertia `I` needs only
+`tan(theta) <= mu_s*(1 + m*r^2/I)` to roll without slipping -- substantially steeper than `atan(mu_s)`
+for any realistic wheel inertia (a rolling wheel resists slipping much better than a sliding block,
+since only a fraction of the gravity component needs to react through the contact tangentially). T6's
+`test_shallow_grade_rolls_with_bounded_creep`/`test_steep_grade_slides` use this corrected threshold;
+T7's cross-tier validation should use it too if it ever tests grade-induced slip on the full bike.
+
+**Also recorded:** "a wheel rolling on flat ground ... decelerates at exactly `c_rr*g`" (task.md T6)
+only holds in the point-mass-wheel limit (`I -> 0`); for a realistic wheel it is
+`c_rr*g*m*r^2/(I + m*r^2)`, the exact analog of `simplified.model`'s own `M/M_eq`-style rolling-term
+reduction. Both the literal limit and the general closed form are tested in
+`tests/analytic/test_contact_regularized.py`.
