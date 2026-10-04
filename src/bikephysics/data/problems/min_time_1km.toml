@@ -1,0 +1,41 @@
+# min_time_1km.toml -- architecture.md S8.5's own worked example, verbatim:
+# minimum time to cover 1 km on flat ground, piecewise-constant pedal force
+# over 20 intervals, bounded by a power ceiling and a (deliberately
+# unspecified-physics, config-only) pedal-force bound, plus a traction
+# margin -- solved with SLSQP + an 8-point multi-start.
+
+name = "min_time_1km_flat"
+forward_model = "simplified"
+bike = "road_bike"
+road = "flat"
+
+[horizon]
+t_max = 300.0
+x_target = 1000.0
+n_output = 200 # performance knob only -- see optim/problem.py's resolve_problem
+
+[initial]
+v_0 = 0.0
+
+[parametrization]
+kind = "piecewise_constant_pedal"
+n = 20
+
+[objective]
+kind = "min_time_over_distance"
+
+[[constraints]]
+kind = "power_ceiling"
+p_max = 400.0
+
+[[constraints]]
+kind = "pedal_force_bound"
+p_max = 800.0 # NOT a physical claim -- see latex/appendix/refinements.tex
+
+[[constraints]]
+kind = "traction_margin"
+
+[solver]
+kind = "scipy_local"
+method = "SLSQP"
+multistart = 8

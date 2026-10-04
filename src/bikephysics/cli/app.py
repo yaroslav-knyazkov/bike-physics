@@ -42,7 +42,7 @@ app.add_typer(validate_app, name="validate")
 # the file (bikephysics.cli.spec_cmds imports `spec_app` back from this
 # module). `spec` lands in T2; `simplified`/`planar`/`opt`/`validate` gain
 # the same kind of import in their own tickets.
-from bikephysics.cli import simplified_cmds, spec_cmds  # noqa: E402,F401
+from bikephysics.cli import optim_cmds, simplified_cmds, spec_cmds  # noqa: E402,F401
 
 
 @app.callback()

@@ -1,0 +1,38 @@
+# oracle_constant_power.toml -- the flat/constant-power/limit-free
+# min-time case `optim.solvers.analytic.AnalyticSimplified` has a
+# closed-form answer for (architecture.md S8.4, D-11). Exactly one scalar
+# `power_ceiling` constraint and nothing else, flat road: the numeric
+# solvers (ScipyLocal/ScipyGlobal) are expected to reproduce
+# AnalyticSimplified's answer here to < 0.5 % (the ticket's acceptance
+# test). The `template_shape`/`constant_power` parametrization is the one
+# control shape capable of representing the Pontryagin-optimal
+# bang-constant-power control exactly, with a single decision variable.
+
+name = "oracle_constant_power_flat"
+forward_model = "simplified"
+bike = "road_bike"
+road = "flat"
+
+[horizon]
+t_max = 120.0
+x_target = 500.0
+
+[initial]
+v_0 = 0.0
+
+[parametrization]
+kind = "template_shape"
+shape = "constant_power"
+p_bounds = [0.0, 400.0]
+
+[objective]
+kind = "min_time_over_distance"
+
+[[constraints]]
+kind = "power_ceiling"
+p_max = 300.0
+
+[solver]
+kind = "scipy_local"
+method = "SLSQP"
+multistart = 4

@@ -1,0 +1,36 @@
+# infeasible_steep_climb.toml -- deliberately infeasible (task.md T8
+# acceptance test): a 20 W power ceiling on a 5 % grade is far below the
+# ~35 W just gravity+rolling resistance demands at any meaningful speed,
+# so the rollout crawls at well under 1 m/s and cannot cover 500 m within
+# the 60 s horizon. `optim.solvers.base.reached_x_target` catches this as
+# a clear, named failure (`OptimResult.success=False`, a message naming
+# the cause) rather than a silently-plausible large objective value.
+
+name = "infeasible_steep_climb"
+forward_model = "simplified"
+bike = "road_bike"
+road = "grade_5pct"
+
+[horizon]
+t_max = 60.0
+x_target = 500.0
+n_output = 100
+
+[initial]
+v_0 = 0.0
+
+[parametrization]
+kind = "piecewise_constant_pedal"
+n = 10
+
+[objective]
+kind = "min_time_over_distance"
+
+[[constraints]]
+kind = "power_ceiling"
+p_max = 20.0
+
+[solver]
+kind = "scipy_local"
+method = "SLSQP"
+multistart = 2
