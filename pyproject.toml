@@ -61,6 +61,12 @@ known-first-party = ["bikephysics"]
 "src/bikephysics/cli/*" = ["TID251"]
 "src/bikephysics/optim/**" = ["TID251"]
 "src/bikephysics/validation/*" = ["TID251"]
+# The banned-api rule targets *cross-tier* imports (a tier module importing
+# another tier, or core importing a tier); a tier's own submodules importing
+# each other (planar/body.py importing planar/state.py, say) is required by
+# S3's multi-file layout and is not what S4's dependency rule forbids.
+"src/bikephysics/planar/**" = ["TID251"]
+"src/bikephysics/simplified/**" = ["TID251"]
 "tests/**" = ["TID251"]
 "examples/**" = ["TID251"]
 
