@@ -1,0 +1,49 @@
+# bmx.toml -- BMX + rider preset (architecture.md S5.1).
+#
+# PROVISIONAL: structurally complete (every required field is present and
+# passes validation) but every value is a plausible guess, not measured
+# or sourced from any BMX-specific reference. Do not treat results from
+# this preset as quantitatively meaningful until it is replaced with real
+# measurements.
+
+[frame]
+m_1 = 48.0          # kg -- provisional: smaller/younger rider + frame
+I_1 = 0.5           # kg*m^2 -- provisional
+l_1_a = 0.33        # m -- provisional
+h_1_a = 0.55        # m -- provisional, lower CG than a road bike
+l_1_B = 1.02        # m -- provisional, typical BMX wheelbase
+l_1_C = 0.38        # m -- provisional
+h_1_C = -0.03       # m -- provisional
+r_1_pedal = 0.1725  # m -- provisional, standard crank length
+
+[rear]
+m_2a = 1.2          # kg -- provisional, small 20" wheel
+I_2a = 0.03         # kg*m^2 -- provisional
+r_2a = 0.26         # m -- provisional, ~20" wheel radius
+c_2a_rr = 0.006     # -- provisional
+r_2a_bk = 0.24      # m -- provisional
+
+[front]
+m_2b = 1.1          # kg -- provisional
+I_2b = 0.03         # kg*m^2 -- provisional
+r_2b = 0.26         # m -- provisional
+c_2b_rr = 0.006     # -- provisional
+r_2b_bk = 0.24      # m -- provisional
+
+[drivetrain]
+I_3b = 0.02         # kg*m^2 -- provisional, single-speed crankset
+r_3b_cr = 0.085     # m -- provisional, larger chainring typical of BMX
+r_2a_cg = 0.045     # m -- provisional, larger single cog typical of BMX
+freewheel = false   # provisional: many BMX hubs are not freewheel (freecoaster/fixed vary)
+
+[aero]
+C_1_x_0 = 1.0       # -- provisional, upright riding position
+A_1 = 0.45          # m^2 -- provisional
+
+[contact]
+mu_s = 0.9          # -- provisional, knobby tire on dirt/pavement mix
+mu_k = 0.75         # -- provisional, <= mu_s
+
+[env]
+g = 9.80665
+rho = 1.225

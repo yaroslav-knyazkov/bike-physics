@@ -1,0 +1,5 @@
+# grade_5pct.toml -- constant 5% grade (core.road.ConstantGrade).
+# "grade" is dz/dx (a slope fraction); core.road.load_road converts it to
+# theta = atan(grade) for the ConstantGrade constructor.
+kind = "constant_grade"
+grade = 0.05

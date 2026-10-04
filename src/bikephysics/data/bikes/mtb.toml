@@ -1,0 +1,49 @@
+# mtb.toml -- mountain bike + rider preset (architecture.md S5.1).
+#
+# PROVISIONAL: structurally complete (every required field is present and
+# passes validation) but every value is a plausible guess, not measured
+# or sourced from any MTB-specific reference. Do not treat results from
+# this preset as quantitatively meaningful until it is replaced with real
+# measurements.
+
+[frame]
+m_1 = 78.0          # kg -- provisional, heavier rider + full-suspension-capable frame
+I_1 = 1.6           # kg*m^2 -- provisional
+l_1_a = 0.5         # m -- provisional
+h_1_a = 0.7         # m -- provisional, higher CG (standover/suspension sag)
+l_1_B = 1.15        # m -- provisional, longer MTB wheelbase
+l_1_C = 0.44        # m -- provisional
+h_1_C = -0.03       # m -- provisional, less BB drop than a road bike
+r_1_pedal = 0.175   # m -- provisional, 175 mm crank, common MTB length
+
+[rear]
+m_2a = 2.6          # kg -- provisional, wider/heavier wheel+tire
+I_2a = 0.2          # kg*m^2 -- provisional
+r_2a = 0.37         # m -- provisional, 29er radius with tire
+c_2a_rr = 0.02      # -- provisional, knobby tire, much higher than road
+r_2a_bk = 0.09      # m -- provisional, disc-brake rotor effective radius
+
+[front]
+m_2b = 2.4          # kg -- provisional
+I_2b = 0.2          # kg*m^2 -- provisional
+r_2b = 0.37         # m -- provisional
+c_2b_rr = 0.02      # -- provisional
+r_2b_bk = 0.09      # m -- provisional, disc-brake rotor effective radius
+
+[drivetrain]
+I_3b = 0.06         # kg*m^2 -- provisional
+r_3b_cr = 0.065     # m -- provisional, smaller 1x chainring typical of modern MTB
+r_2a_cg = 0.065     # m -- provisional, large low-gear cog
+freewheel = true    # provisional: standard freehub
+
+[aero]
+C_1_x_0 = 1.1       # -- provisional, more upright + wider tires than road
+A_1 = 0.5           # m^2 -- provisional
+
+[contact]
+mu_s = 0.7          # -- provisional, dirt/loose-surface average
+mu_k = 0.55         # -- provisional, <= mu_s
+
+[env]
+g = 9.80665
+rho = 1.225

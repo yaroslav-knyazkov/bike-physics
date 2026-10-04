@@ -1,0 +1,54 @@
+# road_bike.toml -- road-bike + rider preset (architecture.md S5.1).
+#
+# Defaults carried over from the deleted `bikephysics/parameters.py`
+# (`BikeParameters`, commit "Initial commit"), re-mapped onto current
+# symbols: m -> M split across frame/rear/front, r_w -> r_2a/r_2b, I2/I3
+# -> I_2a/I_2b, I4 -> I_3b, r_cg -> r_2a_cg, r_cr -> r_3b_cr, c_rr ->
+# c_2a_rr/c_2b_rr, cx -> C_1_x_0, A -> A_1, g -> env.g, rho -> env.rho.
+#
+# Fields with no equivalent in the old flat `BikeParameters` (frame
+# geometry l_1_*/h_1_*, r_1_pedal, brake radii, mu_s/mu_k, bearing
+# friction) are filled with plausible road-bike values, clearly labelled
+# below as such rather than measured.
+
+[frame]
+m_1 = 61.2          # kg -- plausible: old total mass (65 kg) minus both wheels
+I_1 = 1.2           # kg*m^2 -- plausible, not measured
+l_1_a = 0.55        # m -- plausible: CG x-offset from rear axle A
+h_1_a = 0.65        # m -- plausible: CG height above rear axle A
+l_1_B = 1.0         # m -- plausible: wheelbase
+l_1_C = 0.42        # m -- plausible: chainstay length (rear axle A to BB C)
+h_1_C = -0.07       # m -- plausible: ~70 mm BB drop below the rear axle
+r_1_pedal = 0.1725  # m -- standard 172.5 mm crank length
+
+[rear]
+m_2a = 2.0          # kg -- plausible
+I_2a = 0.14         # kg*m^2 -- carried over from old I3 (rear wheel)
+r_2a = 0.335        # m -- carried over from old r_w
+c_2a_rr = 0.005     # -- carried over from old c_rr
+r_2a_bk = 0.31      # m -- plausible rim-brake effective radius
+
+[front]
+m_2b = 1.8          # kg -- plausible, front wheel slightly lighter (no cassette)
+I_2b = 0.14         # kg*m^2 -- carried over from old I2 (front wheel)
+r_2b = 0.335        # m -- carried over from old r_w
+c_2b_rr = 0.005     # -- carried over from old c_rr
+r_2b_bk = 0.31      # m -- plausible rim-brake effective radius
+
+[drivetrain]
+I_3b = 0.05         # kg*m^2 -- carried over from old I4 (crankset)
+r_3b_cr = 0.075     # m -- carried over from old r_cr (chainring)
+r_2a_cg = 0.03      # m -- carried over from old r_cg (rear cog)
+freewheel = true    # plausible: a road bike's rear hub has a freewheel
+
+[aero]
+C_1_x_0 = 0.88      # -- carried over from old cx
+A_1 = 0.4           # m^2 -- carried over from old A
+
+[contact]
+mu_s = 0.8          # -- plausible: dry asphalt / rubber
+mu_k = 0.7          # -- plausible, <= mu_s
+
+[env]
+g = 9.81            # m/s^2 -- carried over from old g (rounded standard value)
+rho = 1.225         # kg/m^3 -- carried over from old rho (sea-level ISA)

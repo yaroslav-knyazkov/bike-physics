@@ -36,6 +36,14 @@ app.add_typer(opt_app, name="opt")
 app.add_typer(spec_app, name="spec")
 app.add_typer(validate_app, name="validate")
 
+# Each subcommand module decorates its commands directly onto the sub-app
+# instances above (`spec_app.command(...)`, etc.), so it must be imported
+# for that side effect -- after the sub-apps exist, hence not at the top of
+# the file (bikephysics.cli.spec_cmds imports `spec_app` back from this
+# module). `spec` lands in T2; `simplified`/`planar`/`opt`/`validate` gain
+# the same kind of import in their own tickets.
+from bikephysics.cli import spec_cmds  # noqa: E402,F401
+
 
 @app.callback()
 def global_options(

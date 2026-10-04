@@ -1,0 +1,4 @@
+# rolling_sine.toml -- gentle rolling terrain (core.road.SineRoad).
+kind = "sine"
+amplitude = 3.0     # m
+wavelength = 200.0  # m

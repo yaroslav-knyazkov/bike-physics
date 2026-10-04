@@ -1,0 +1,5 @@
+# step_jump.toml -- a smoothed step for airborne-phase testing (core.road.StepJump).
+kind = "step_jump"
+x_jump = 50.0
+height = 0.3
+ramp_width = 0.05
