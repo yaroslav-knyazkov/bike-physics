@@ -12,7 +12,14 @@
   "complexity": "complex",
   "pipeline": "architect (done) -> developer, ticket by ticket per task.md -> qa (spot-checks + physics regression tests) -> documentation (README/docs pass near the end)",
   "stage": "implementation",
-  "current_ticket": "T1",
+  "current_ticket": "ALL THREE REQUESTED DELIVERABLES COMPLETE. T9-T13 are optional stretch/fidelity/future-proofing tickets, not yet started -- awaiting user direction on whether to continue.",
+  "tickets_done": ["T1 (commit f02cf68)", "T2 (commit 2518617)", "T3 (commit 02b7b8d)", "T5 (commit 6ee3543)", "T4 (commit d2b20f2) -- DELIVERABLE 1 (Simplified app) complete", "T6 (commit cdfc3cd)", "T8 (commit a7dd897) -- DELIVERABLE 3 (Optimization software) complete", "T7 (commit 8577ced) -- DELIVERABLE 2 (2D app) complete"],
+  "architecture_errata_found_during_implementation": [
+    "T6: architecture.md Sec7.6.2 eq (7.12) literal sign on the Hunt-Crossley rate term is unstable (negative damping); corrected to match the standard penetration-rate convention. Documented in architecture-notes.md section (e) and in planar/contact/regularized.py's docstring. Not re-approved by the user as a separate gate -- it is a bug-fix restoring the already-approved design intent (a differentiable, damped contact model), not a new modeling choice.",
+    "T6: architecture.md Sec7.6.2's c_HC derivation rescaled so zeta_N delivers its documented damping ratio at the real delta~=delta_target operating point (literal rule made zeta_N negligible at realistic mm-scale penetrations). Same status as above.",
+    "T7: architecture.md Sec7.1's forward-rolling spin-sign convention, Sec7.5.2's chain generalized-force sign, and Sec7.3's brake-reaction sign were all empirically wrong under the literal text (pedaling decelerated the bike, braking accelerated it, chain tension came out negative) and were corrected to be self-consistent with T5's already-tested rotation convention. Verified against all five Sec7.5.6 cross-tier checks plus qualitative coasting/braking sanity. Documented in each affected module's docstring and architecture-notes.md section (f). Same not-a-new-decision status as T6's fixes -- restores the approved design intent, doesn't change it.",
+    "All of the above should be shown to the architect (or the user, standing in for one) before ticket T12 ports Sec7.5 back into latex/2d_systems/drivetrain.tex, so the LaTeX gets the corrected signs, not the literal buggy ones."
+  ],
   "artifacts": {
     "architecture": "architecture.md",
     "tasks": "task.md",

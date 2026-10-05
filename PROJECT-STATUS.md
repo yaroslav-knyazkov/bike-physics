@@ -13,25 +13,35 @@ Given the nature of the project (no external users, the LaTeX *is* the requireme
 `status.json`'s `modules_skipped` for the reasoning. `architect`, `developer`, `qa`, and
 `documentation` are the active modules.
 
+## STATUS: all three requested deliverables complete (T1-T8 done; T9-T13 optional, not started)
+
 ## Current stage: Implementation
 
 - [x] Architecture designed (`architecture.md`) and sequenced into tickets (`task.md`)
 - [x] All 16 stack/physics decision points (D-1..D-16) presented to the user as comparison tables and
       approved — see `status.json`'s `decisions_log` for the full record
-- [ ] T1 — Repository scaffolding, packaging, shared-core skeleton (next)
-- [ ] T2 — Shared physics core (atmosphere, aero, road, pedal/brake inputs, limits, parameters)
-- [ ] T3 — Simplified-tier model + analysis
-- [ ] T4 — Simplified-tier CLI app (**Simplified app complete after this ticket**)
-- [ ] T5 — 2D engine core (bodies, constraints, solver)
-- [ ] T6 — 2D ground contact (regularized, default)
-- [ ] T7 — 2D lumped drivetrain + full 2D app (**2D app complete after this ticket**; hard gate: must
-      reproduce the Simplified tier's boxed chain-tension/M_eq equations, §7.5.6 of architecture.md)
-- [ ] T8 — Optimization software, milestone 1: scipy-based control parametrization (**Optimization app
-      complete after this ticket**; depends only on T4, not on the 2D engine)
+- [x] T1 — Repository scaffolding, packaging, shared-core skeleton (commit f02cf68)
+- [x] T2 — Shared physics core (atmosphere, aero, road, pedal/brake inputs, limits, parameters) (commit 2518617)
+- [x] T3 — Simplified-tier model + analysis (commit 02b7b8d)
+- [x] T4 — Simplified-tier CLI app (commit d2b20f2) -- **DELIVERABLE 1 (Simplified app) COMPLETE**
+- [x] T5 — 2D engine core (bodies, constraints, solver) (commit 6ee3543)
+- [x] T6 — 2D ground contact (regularized, default) (commit cdfc3cd; two architecture.md Sec7.6.2 erratum
+      fixes found and documented, see status.json)
+- [x] T7 — 2D lumped drivetrain + full 2D app (commit 8577ced) --
+      **DELIVERABLE 2 (2D app) COMPLETE** (four architecture.md sign-convention errata found and fixed,
+      see status.json)
+- [x] T8 — Optimization software, milestone 1: scipy-based control parametrization (commit a7dd897) --
+      **DELIVERABLE 3 (Optimization software) COMPLETE**
+
+**All three originally requested deliverables are done.** 548 tests pass project-wide, ruff/mypy clean
+across 110 source files. Remaining tickets are optional stretch/fidelity/future-proofing work, not yet
+started, pending user direction:
+
 - [ ] T9 — Optimization milestone 2: CasADi direct collocation (optional extra)
 - [ ] T10 — Optimization against the 2D model (stretch)
 - [ ] T11 — Event-driven exact contact model (fidelity reference for T6)
-- [ ] T12 — Port the lumped drivetrain model back into `latex/2d_systems/drivetrain.tex` for user review
+- [ ] T12 — Port the corrected lumped drivetrain model + sign-convention fixes back into
+      `latex/2d_systems/drivetrain.tex` for user review
 - [ ] T13 — Remaining polish/future-proofing per architecture.md §13
 
 Full ticket detail, module boundaries, and spec slices: `task.md`. Full architecture rationale and all
