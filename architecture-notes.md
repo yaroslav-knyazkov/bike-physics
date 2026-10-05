@@ -132,3 +132,76 @@ only holds in the point-mass-wheel limit (`I -> 0`); for a realistic wheel it is
 `c_rr*g*m*r^2/(I + m*r^2)`, the exact analog of `simplified.model`'s own `M/M_eq`-style rolling-term
 reduction. Both the literal limit and the general closed form are tested in
 `tests/analytic/test_contact_regularized.py`.
+
+## (f) T7 -- the lumped drivetrain: one foundational sign correction, three consequences, and one
+data-model gap, all flagged for architect/user sign-off
+
+**Root cause.** Architecture.md S7.1 claims "forward rolling gives negative spin, `omega_2a =
+-v_x/r_2a`", citing `forward_motion.tex`'s own (z-**down**-convention) `phi_ddot_2a = -x_ddot/r_2a`
+as justification for carrying the same sign into the z-**up** planar convention. Working the
+zero-slip condition through the already-built, already-tested T5 engine's own rotation convention
+(`planar.body`'s `y_hat x r = (r_z, -r_x)`, cross-checked against `rotation_matrix`'s own derivative)
+for the contact point at local `(0, -r)` (straight down from the axle) gives `v_contact_x = v_axle_x +
+omega*r_z = v_axle_x - omega*r`; zero slip at `v_axle_x > 0` therefore needs `omega = +v_axle_x/r`,
+the **opposite** sign from S7.1's claim. This is independently confirmed by T6's own
+`contact.geometry.contact_geometry`'s `v_slip = v_axle_x0 - radius*omega` formula, which needs the
+same `+v/r`. The likely mechanism: D-13's documented z-sign flip between the two tiers' conventions
+also flips the *sense* of "positive rotation about +y_hat" (flipping one axis of a right-handed triad
+flips its handedness), a rotational consequence D-13's own text does not spell out.
+
+This was **found empirically**, not derived first: a rolling IC built from S7.1's literal sign gave
+`v_slip = 10 m/s` instead of `0` at a supposedly-consistent rolling start (`planar/kinematics.py`'s
+own IC solver), which was the first symptom.
+
+**Four places this ticket had to correct for self-consistency** (all documented in the listed
+module's own docstring, all empirically verified via the §7.5.6 cross-tier tests and the coasting/
+braking qualitative checks the ticket's "Done when" explicitly asks for):
+
+1. `planar/kinematics.py` -- the rolling-seed `omega_2a = +v0/r_2a` (not `-v0/r_2a`).
+2. `planar/forces/pedal.py` -- the tangential-force direction, so that positive pedal force drives
+   *positive* (not negative) crank spin, matching the corrected rolling sign.
+3. `planar/constraints/gear.py` (`IdealChain`) -- **a second, independent correction**, found while
+   chasing the first: `planar/solver.py`'s actual `kkt_solve` arithmetic is `M@a = h + J^T@lambda`
+   (verified directly from `sol = [a, -lam]`), not the `h - J^T@lambda` architecture.md S7.5.2's prose
+   assumes when it states the chain's generalized-force signs -- an independent documentation/code
+   mismatch, unrelated to the rolling-sign issue but found investigating the same symptom (chain
+   engaging with the wrong-sign tension). Fixed by flipping `c_chain`'s overall sign (the constraint
+   set `c=0` is unchanged; only which sign of `lambda` means "tension" changes).
+4. `planar/forces/brake.py` -- the brake moment must resist the wheel's own (now-positive-for-forward)
+   spin, so `-sigma*r_bk*B` on the wheel (not `+sigma*r_bk*B` as S7.3 literally states).
+
+**Verification.** After all four corrections, `validation/cross_tier.py`'s five §7.5.6 checks all pass
+(steady-state speed agreement to < 0.1% across 9 power/grade combinations; chain tension to < 1e-5
+relative error away from the `t=0` zero-slip transient; the reflected-inertia identity exact to float
+precision; static load split exact; wheelie/stoppie crossings within the documented tolerance) --
+summarized in this ticket's final developer report, full numbers in `tests/crosstier/
+test_planar_vs_simplified.py`'s own run output.
+
+**Data-model gap, not a sign bug: no `m_3b` field.** `core.params.DrivetrainParams` has no crankset
+mass field -- `BikeSpec.M`/`m_eq`'s own docstrings confirm the crankset's mass is folded into
+`frame.m_1` (the Simplified tier's point-mass assumption, which S7.5.1 item 2 explicitly says the
+planar tier reuses). Since body `3b`'s CoG is pinned to the frame's own point `C` (zero offset), a
+real `m_3b` would double-count against `frame.m_1` and break the exact §7.5.6 reduction. `planar
+/drivetrain.py::CRANKSET_MASS_PLACEHOLDER = 1e-9` kg exists purely to satisfy `RigidBody`'s own
+`mass > 0` structural invariant and is physically negligible. If a real `m_3b` field is ever added to
+`DrivetrainParams` (out of this ticket's `core/params.py`-free boundary), §7.5.6's reduction should be
+re-derived to confirm it still holds with `m_3b != 0`.
+
+**`simulate_with_freewheel`'s default `rtol`/`atol`/`max_drift` (`planar/drivetrain.py`), recorded per
+S12.2.** The freewheel driver's RHS embeds a trial-solve mode switch (continuous but not smooth at the
+engage/disengage boundary); `planar/integrate.py::run`'s own tight defaults (`rtol=atol=1e-9`,
+`max_drift=1e-6`) were found empirically to diverge to `NaN` on an otherwise-unremarkable 10-30 s
+constant-torque run, while `rtol=1e-6`, `atol=1e-8`, `max_drift=1e-4` integrate the *same* inputs
+cleanly and still meet the ticket's own `30 s run < 5 s wall-clock` target (measured: 4.6-4.9 s on this
+machine). These are now `simulate_with_freewheel`'s own defaults; `validation/cross_tier.py`'s own
+checks pass tighter `rtol`/`atol` explicitly where the run never approaches a mode boundary.
+
+**A genuine (non-numerical) model limit, documented so it is not re-discovered as a "bug" later:**
+sustained periodic pedal inputs with large peak force (e.g. `ClippedSine` with `P_0 >= 150` N) on the
+`rolling_sine` road preset can drive the planar model into an actual high-pitch-rate/traction-limit
+regime within 15-20 s, past which the regularized contact model's own Newton foot-of-normal solve
+stops converging (not a sign error -- confirmed by bisecting the failure time and inspecting the
+state immediately before divergence, which shows ordinary, physically plausible values right up to
+the failure). `examples/04_planar_rolling_road.py` uses a modest constant-torque input specifically to
+stay inside the model's well-behaved operating range; T11's `EventDrivenContact` (exact rolling, no
+compliance) is the natural place to characterize this regime's true boundary, not this ticket.
